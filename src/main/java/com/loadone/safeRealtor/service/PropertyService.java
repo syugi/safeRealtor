@@ -2,16 +2,16 @@ package com.loadone.safeRealtor.service;
 
 import com.loadone.safeRealtor.model.Property;
 import com.loadone.safeRealtor.repository.PropertyRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PropertyService {
 
-    @Autowired
-    private PropertyRepository propertyRepository;
+    private final PropertyRepository propertyRepository;
 
     public Property addProperty(Property property) {
         return propertyRepository.save(property);

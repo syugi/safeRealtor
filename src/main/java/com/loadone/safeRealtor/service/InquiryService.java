@@ -2,16 +2,16 @@ package com.loadone.safeRealtor.service;
 
 import com.loadone.safeRealtor.model.Inquiry;
 import com.loadone.safeRealtor.repository.InquiryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class InquiryService {
 
-    @Autowired
-    private InquiryRepository inquiryRepository;
+    private final InquiryRepository inquiryRepository;
 
     public Inquiry addInquiry(Inquiry inquiry) {
         return inquiryRepository.save(inquiry);

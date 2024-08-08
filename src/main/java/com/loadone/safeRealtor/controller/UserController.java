@@ -2,15 +2,15 @@ package com.loadone.safeRealtor.controller;
 
 import com.loadone.safeRealtor.model.User;
 import com.loadone.safeRealtor.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @PostMapping("/register")
     public User registerUser(@RequestBody User user) {

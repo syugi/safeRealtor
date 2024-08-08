@@ -2,14 +2,15 @@ package com.loadone.safeRealtor.service;
 
 import com.loadone.safeRealtor.model.Agent;
 import com.loadone.safeRealtor.repository.AgentRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AgentService {
 
-    @Autowired
-    private AgentRepository agentRepository;
+    private final AgentRepository agentRepository;
 
     public Agent registerAgent(Agent agent) {
         return agentRepository.save(agent);

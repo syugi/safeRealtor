@@ -2,16 +2,16 @@ package com.loadone.safeRealtor.service;
 
 import com.loadone.safeRealtor.model.Favorite;
 import com.loadone.safeRealtor.repository.FavoriteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class FavoriteService {
 
-    @Autowired
-    private FavoriteRepository favoriteRepository;
+    private final FavoriteRepository favoriteRepository;
 
     public Favorite addFavorite(Favorite favorite) {
         return favoriteRepository.save(favorite);
