@@ -1,6 +1,6 @@
 package com.loadone.safeRealtor.service;
 
-import com.loadone.safeRealtor.model.ChatMessage;
+import com.loadone.safeRealtor.model.entity.ChatMessage;
 import com.loadone.safeRealtor.repository.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

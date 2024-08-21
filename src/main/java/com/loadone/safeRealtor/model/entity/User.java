@@ -1,4 +1,4 @@
-package com.loadone.safeRealtor.model;
+package com.loadone.safeRealtor.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -23,7 +23,7 @@ public class User {
     private String password;
 
     @Column(nullable = false, unique = true)
-    private String email;
+    private String phoneNumber;
 
     @Column(nullable = false)
     private String role; //구분 (0:관리자, 1:공인중개사, 2:사용자)

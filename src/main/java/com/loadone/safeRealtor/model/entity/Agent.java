@@ -1,4 +1,4 @@
-package com.loadone.safeRealtor.model;
+package com.loadone.safeRealtor.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

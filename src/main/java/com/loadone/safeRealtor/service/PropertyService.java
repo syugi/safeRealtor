@@ -1,6 +1,6 @@
 package com.loadone.safeRealtor.service;
 
-import com.loadone.safeRealtor.model.Property;
+import com.loadone.safeRealtor.model.entity.Property;
 import com.loadone.safeRealtor.repository.PropertyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

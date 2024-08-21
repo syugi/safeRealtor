@@ -1,6 +1,6 @@
 package com.loadone.safeRealtor.service;
 
-import com.loadone.safeRealtor.model.Favorite;
+import com.loadone.safeRealtor.model.entity.Favorite;
 import com.loadone.safeRealtor.repository.FavoriteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

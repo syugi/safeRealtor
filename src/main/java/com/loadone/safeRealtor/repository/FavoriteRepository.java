@@ -1,6 +1,6 @@
 package com.loadone.safeRealtor.repository;
 
-import com.loadone.safeRealtor.model.Favorite;
+import com.loadone.safeRealtor.model.entity.Favorite;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
