@@ -12,6 +12,10 @@ import java.util.Set;
 @AllArgsConstructor
 public class User {
 
+    public static final int ROLE_ADMIN = 0;
+    public static final int ROLE_AGENT = 1;
+    public static final int ROLE_USER = 2;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,7 +30,7 @@ public class User {
     private String phoneNumber;
 
     @Column(nullable = false)
-    private String role; //구분 (0:관리자, 1:공인중개사, 2:사용자)
+    private int role; //구분 (0:관리자, 1:공인중개사, 2:사용자)
 
     @OneToOne(mappedBy = "user")
     private Agent agent;

@@ -3,7 +3,6 @@ package com.loadone.safeRealtor.model.dto;
 import lombok.Data;
 
 @Data
-public class VerificationRequest {
+public class PhoneNumberReqDTO {
     private String phoneNumber;
-    private String verificationCode;
 }

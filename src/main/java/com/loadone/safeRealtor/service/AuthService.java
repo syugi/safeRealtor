@@ -1,7 +1,5 @@
 package com.loadone.safeRealtor.service;
 
-import com.loadone.safeRealtor.model.dto.RegisterRequest;
-import com.loadone.safeRealtor.model.entity.User;
 import com.loadone.safeRealtor.model.entity.VerificationCode;
 import com.loadone.safeRealtor.repository.UserRepository;
 import com.loadone.safeRealtor.repository.VerificationCodeRepository;
@@ -44,24 +42,5 @@ public class AuthService {
     // 사용자명 중복 확인
     public boolean isUsernameAvailable(String username) {
         return !userRepository.existsByUsername(username);
-    }
-
-    // 회원가입
-    public boolean register(RegisterRequest request) {
-        if (!verifyCode(request.getPhoneNumber(), request.getVerificationCode())) {
-            return false;
-        }
-
-        if (userRepository.existsByUsername(request.getUsername())) {
-            return false;
-        }
-
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setPhoneNumber(request.getPhoneNumber());
-        userRepository.save(user);
-
-        return true;
     }
 }
