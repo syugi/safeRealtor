@@ -1,5 +1,7 @@
 package com.loadone.saferealtor.service;
 
+import com.loadone.saferealtor.model.dto.RegisterUserReqDTO;
+import com.loadone.saferealtor.model.entity.User;
 import com.loadone.saferealtor.model.entity.VerificationCode;
 import com.loadone.saferealtor.repository.UserRepository;
 import com.loadone.saferealtor.repository.VerificationCodeRepository;
@@ -21,6 +23,8 @@ public class AuthService {
 
     // 인증번호 발송
     public void sendVerificationCode(String phoneNumber) {
+        verificationCodeRepository.deleteByPhoneNumber(phoneNumber);
+
         String code = generateVerificationCode();
         smsService.sendSms(phoneNumber, "Your verification code is " + code);
 
@@ -42,5 +46,30 @@ public class AuthService {
     // 사용자명 중복 확인
     public boolean isUsernameAvailable(String username) {
         return !userRepository.existsByUsername(username);
+    }
+
+    // 사용자 회원가입
+    public boolean register(RegisterUserReqDTO request) {
+
+        if (userRepository.existsByUsername(request.getUsername())) {
+            return false;
+        }
+
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setRole(request.getRole());
+        userRepository.save(user);
+
+        return true;
+    }
+
+    public boolean login(String username, String password){
+        User user = userRepository.findByUsername(username);
+        if(user != null){
+            return passwordEncoder.matches(password, user.getPassword());
+        }
+        return false;
     }
 }
