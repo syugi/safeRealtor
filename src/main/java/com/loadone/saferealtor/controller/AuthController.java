@@ -10,8 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -41,7 +39,11 @@ public class AuthController {
     @GetMapping("/checkUsername")
     public ResponseEntity<?> checkUsername(@RequestParam String username) {
         boolean isAvailable = authService.isUsernameAvailable(username);
-        return ResponseEntity.ok().body(Collections.singletonMap("available", isAvailable));
+        if(isAvailable){
+            return ResponseEntity.ok().body("사용 가능한 사용자명입니다.");
+        } else {
+            return ResponseEntity.badRequest().body("이미 사용중인 사용자명입니다.");
+        }
     }
 
     /* 회원가입 */

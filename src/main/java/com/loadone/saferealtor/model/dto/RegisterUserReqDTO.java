@@ -7,6 +7,4 @@ public class RegisterUserReqDTO {
     private String username;
     private String password;
     private String phoneNumber;
-    private String verificationCode;
-    private int role;
 }
