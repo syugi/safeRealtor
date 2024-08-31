@@ -57,9 +57,9 @@ public class AuthController {
     }
 
     /* 사용자명 중복 확인 */
-    @GetMapping("/checkUsername")
-    public ResponseEntity<?> checkUsername(@RequestParam String username) {
-        boolean isAvailable = authService.isUsernameAvailable(username);
+    @GetMapping("/checkUserId")
+    public ResponseEntity<?> checkUserId(@RequestParam String userId) {
+        boolean isAvailable = authService.isUserIdAvailable(userId);
         if(isAvailable){
             return ResponseEntity.ok().body("사용 가능한 사용자명입니다.");
         } else {
@@ -80,7 +80,7 @@ public class AuthController {
     /* 로그인 */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginReqDTO request) {
-        boolean authenticated = authService.login(request.getUsername(), request.getPassword());
+        boolean authenticated = authService.login(request.getUserId(), request.getPassword());
         if (authenticated) {
             return ResponseEntity.ok("로그인 성공");
         } else {

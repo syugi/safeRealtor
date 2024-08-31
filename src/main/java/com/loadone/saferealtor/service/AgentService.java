@@ -19,7 +19,6 @@ public class AgentService {
         Agent existingAgent = agentRepository.findById(agent.getId()).orElseThrow();
         existingAgent.setName(agent.getName());
         existingAgent.setLicenseNumber(agent.getLicenseNumber());
-        existingAgent.setPhoneNumber(agent.getPhoneNumber());
         existingAgent.setEmail(agent.getEmail());
         return agentRepository.save(existingAgent);
     }

@@ -13,9 +13,9 @@ public class UserController {
     private final UserService userService;
 
     /* 사용자 정보 조회 */
-    @GetMapping("/{username}")
-    public User getUserByUsername(@PathVariable String username) {
-        return userService.findUserByUsername(username);
+    @GetMapping("/{userId}")
+    public User getUserByUserId(@PathVariable String userId) {
+        return userService.findUserByUserId(userId);
     }
 
     /* 사용자 정보 수정 */

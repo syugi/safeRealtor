@@ -51,19 +51,19 @@ public class AuthService {
     }
 
     // 사용자명 중복 확인
-    public boolean isUsernameAvailable(String username) {
-        return !userRepository.existsByUsername(username);
+    public boolean isUserIdAvailable(String userId) {
+        return !userRepository.existsByUserId(userId);
     }
 
     // 사용자 회원가입
     public boolean register(RegisterUserReqDTO request) {
 
-        if (userRepository.existsByUsername(request.getUsername())) {
+        if (userRepository.existsByUserId(request.getUserId())) {
             return false;
         }
 
         User user = new User();
-        user.setUsername(request.getUsername());
+        user.setUserId(request.getUserId());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setPhoneNumber(request.getPhoneNumber());
         user.setRole(User.ROLE_USER);
@@ -72,8 +72,8 @@ public class AuthService {
         return true;
     }
 
-    public boolean login(String username, String password){
-        Optional<User> user = userRepository.findByUsername(username);
+    public boolean login(String userId, String password){
+        Optional<User> user = userRepository.findByUserId(userId);
         if(user.isPresent()){
             return passwordEncoder.matches(password, user.get().getPassword());
         }

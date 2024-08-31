@@ -21,7 +21,6 @@ public class Agent {
 
     private String licenseNumber;
 
-    private String phoneNumber;
     private String email;
 
     @OneToOne
