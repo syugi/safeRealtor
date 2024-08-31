@@ -1,11 +1,10 @@
 package com.loadone.saferealtor.controller;
 
-import com.loadone.saferealtor.model.dto.LoginReqDTO;
-import com.loadone.saferealtor.model.dto.PhoneNumberReqDTO;
-import com.loadone.saferealtor.model.dto.RegisterUserReqDTO;
-import com.loadone.saferealtor.model.dto.VerificationReqDTO;
+import com.loadone.saferealtor.model.dto.*;
+import com.loadone.saferealtor.model.entity.User;
 import com.loadone.saferealtor.model.entity.VerificationCode;
 import com.loadone.saferealtor.repository.VerificationCodeRepository;
+import com.loadone.saferealtor.service.AgentService;
 import com.loadone.saferealtor.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,7 +22,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final VerificationCodeRepository verificationCodeRepository;
-
+    private final AgentService agentService;
     /* 인증번호 발송 */
     @PostMapping("/sendVerificationCode")
     public ResponseEntity<?> sendVerificationCode(@RequestBody PhoneNumberReqDTO request) {
@@ -61,16 +60,16 @@ public class AuthController {
     public ResponseEntity<?> checkUserId(@RequestParam String userId) {
         boolean isAvailable = authService.isUserIdAvailable(userId);
         if(isAvailable){
-            return ResponseEntity.ok().body("사용 가능한 사용자명입니다.");
+            return ResponseEntity.ok().body("사용 가능한 아이디 입니다.");
         } else {
-            return ResponseEntity.badRequest().body("이미 사용중인 사용자명입니다.");
+            return ResponseEntity.badRequest().body("이미 사용중인 아이디 입니다.");
         }
     }
 
     /* 회원가입 */
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterUserReqDTO request) {
-        if (authService.register(request)) {
+        if (authService.register(request,User.ROLE_USER)) {
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {
             return ResponseEntity.badRequest().build();
@@ -87,5 +86,4 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("아이디 혹은 비밀번호를 다시 확인해 주세요.");
         }
     }
-
 }

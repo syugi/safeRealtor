@@ -1,13 +1,12 @@
 package com.loadone.saferealtor.model.dto;
-
-import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
-public class RegisterUserReqDTO {
+public class RegisterAgentReqDTO {
+    private String name;
+    private String licenseNumber;
+    private String email;
     private String userId;
     private String password;
     private String phoneNumber;
-    private int role;
 }

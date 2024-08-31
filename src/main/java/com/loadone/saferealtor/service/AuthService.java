@@ -56,7 +56,7 @@ public class AuthService {
     }
 
     // 사용자 회원가입
-    public boolean register(RegisterUserReqDTO request) {
+    public boolean register(RegisterUserReqDTO request, int userRole) {
 
         if (userRepository.existsByUserId(request.getUserId())) {
             return false;
@@ -66,7 +66,7 @@ public class AuthService {
         user.setUserId(request.getUserId());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setPhoneNumber(request.getPhoneNumber());
-        user.setRole(User.ROLE_USER);
+        user.setRole(userRole);
         userRepository.save(user);
 
         return true;
