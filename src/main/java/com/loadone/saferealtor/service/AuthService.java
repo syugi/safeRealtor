@@ -23,9 +23,13 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    public boolean isPhoneNumberRegistered(String phoneNumber) {
+        // 전화번호로 사용자를 조회하여 이미 등록된 사용자인지 확인
+        return userRepository.existsByPhoneNumber(phoneNumber);
+    }
+
     // 인증번호 발송
     public ResponseEntity<?> sendVerificationCode(String phoneNumber) {
-
         // 새로운 인증 코드 생성 및 저장
         String code = generateVerificationCode();
 

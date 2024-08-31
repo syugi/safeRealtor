@@ -27,6 +27,14 @@ public class AuthController {
     /* 인증번호 발송 */
     @PostMapping("/sendVerificationCode")
     public ResponseEntity<?> sendVerificationCode(@RequestBody PhoneNumberReqDTO request) {
+        String phoneNumber = request.getPhoneNumber();
+
+        // 회원가입 여부 확인
+        if (authService.isPhoneNumberRegistered(phoneNumber)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("이미 회원가입된 전화번호입니다.");
+        }
+
         authService.sendVerificationCode(request.getPhoneNumber());
         return ResponseEntity.ok().body("발송되었습니다.");
     }
@@ -74,9 +82,9 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginReqDTO request) {
         boolean authenticated = authService.login(request.getUsername(), request.getPassword());
         if (authenticated) {
-            return ResponseEntity.ok("Login successful");
+            return ResponseEntity.ok("로그인 성공");
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("아이디 혹은 비밀번호를 다시 확인해 주세요.");
         }
     }
 
