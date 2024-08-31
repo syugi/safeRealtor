@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -14,12 +16,7 @@ public class VerificationCode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String phoneNumber;
     private String code;
-
-    public VerificationCode(String phoneNumber, String code) {
-        this.phoneNumber = phoneNumber;
-        this.code = code;
-    }
+    private LocalDateTime requestedAt; // 요청 시간
 }

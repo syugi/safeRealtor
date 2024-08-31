@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class VerificationReqDTO {
     private String phoneNumber;
-    private String verificationCode;
+    private String code;
 }

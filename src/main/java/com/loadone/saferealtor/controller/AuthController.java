@@ -4,11 +4,17 @@ import com.loadone.saferealtor.model.dto.LoginReqDTO;
 import com.loadone.saferealtor.model.dto.PhoneNumberReqDTO;
 import com.loadone.saferealtor.model.dto.RegisterUserReqDTO;
 import com.loadone.saferealtor.model.dto.VerificationReqDTO;
+import com.loadone.saferealtor.model.entity.VerificationCode;
+import com.loadone.saferealtor.repository.VerificationCodeRepository;
 import com.loadone.saferealtor.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -16,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final VerificationCodeRepository verificationCodeRepository;
 
     /* 인증번호 발송 */
     @PostMapping("/sendVerificationCode")
@@ -27,12 +34,18 @@ public class AuthController {
     /* 인증번호 확인 */
     @PostMapping("/verifyCode")
     public ResponseEntity<?> verifyCode(@RequestBody VerificationReqDTO request) {
-        boolean isValid = authService.verifyCode(request.getPhoneNumber(), request.getVerificationCode());
-        if (isValid) {
-            return ResponseEntity.ok().body("인증번호 확인 되었습니다.");
-        } else {
-            return ResponseEntity.badRequest().body("인증번호가 일치하지 않습니다.");
+        final int MAX_MINUTES = 3;
+        Optional<VerificationCode> verificationCode = verificationCodeRepository.findTopByPhoneNumberOrderByRequestedAtDesc(request.getPhoneNumber());
+
+        if (verificationCode.isEmpty() || !verificationCode.get().getCode().equals(request.getCode())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("인증번호가 일치하지 않습니다.");
         }
+
+        if (ChronoUnit.MINUTES.between(verificationCode.get().getRequestedAt(), LocalDateTime.now()) >= MAX_MINUTES) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("인증번호가 만료되었습니다.");
+        }
+
+        return ResponseEntity.ok("인증번호가 확인 되었습니다.");
     }
 
     /* 사용자명 중복 확인 */

@@ -6,9 +6,11 @@ import com.loadone.saferealtor.model.entity.VerificationCode;
 import com.loadone.saferealtor.repository.UserRepository;
 import com.loadone.saferealtor.repository.VerificationCodeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
 
@@ -22,25 +24,26 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     // 인증번호 발송
-    public void sendVerificationCode(String phoneNumber) {
-        verificationCodeRepository.deleteByPhoneNumber(phoneNumber);
+    public ResponseEntity<?> sendVerificationCode(String phoneNumber) {
 
+        // 새로운 인증 코드 생성 및 저장
         String code = generateVerificationCode();
-        smsService.sendSms(phoneNumber, "Your verification code is " + code);
 
-        VerificationCode verificationCode = new VerificationCode(phoneNumber, code);
+        VerificationCode verificationCode = new VerificationCode();
+        verificationCode.setPhoneNumber(phoneNumber);
+        verificationCode.setCode(code);
+        verificationCode.setRequestedAt(LocalDateTime.now());
         verificationCodeRepository.save(verificationCode);
+
+        //SMS 전송
+        smsService.sendSms(phoneNumber, "[안부] 인증번호는 ["+code+"]입니다.");
+
+        return ResponseEntity.ok("인증번호가 발송되었습니다.");
     }
 
     // 인증번호 생성
     private String generateVerificationCode() {
-        return String.valueOf(new Random().nextInt(999999));
-    }
-
-    // 인증번호 확인
-    public boolean verifyCode(String phoneNumber, String verificationCode) {
-        Optional<VerificationCode> storedCode = verificationCodeRepository.findByPhoneNumber(phoneNumber);
-        return storedCode.isPresent() && storedCode.get().getCode().equals(verificationCode);
+        return String.format("%06d", new Random().nextInt(999999));
     }
 
     // 사용자명 중복 확인
@@ -66,9 +69,9 @@ public class AuthService {
     }
 
     public boolean login(String username, String password){
-        User user = userRepository.findByUsername(username);
-        if(user != null){
-            return passwordEncoder.matches(password, user.getPassword());
+        Optional<User> user = userRepository.findByUsername(username);
+        if(user.isPresent()){
+            return passwordEncoder.matches(password, user.get().getPassword());
         }
         return false;
     }
