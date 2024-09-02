@@ -22,7 +22,7 @@ public class Property {
     private String propertyNumber; // 매물 번호 (고유 식별자)
 
     @Column(nullable = false)
-    private BigDecimal price;  // 매물의 가격
+    private String price;  // 매물의 가격
 
     @Column(nullable = false)
     private String description;  // 매물에 대한 간단한 설명
@@ -30,7 +30,7 @@ public class Property {
     @Enumerated(EnumType.STRING)
     private PropertyType type;  // 매물의 종류 (전세, 월세, 매매)
 
-    private BigDecimal maintenanceFee;  // 관리비
+    private String maintenanceFee;  // 관리비
 
     private Boolean parkingAvailable;  // 주차 가능 여부
 
