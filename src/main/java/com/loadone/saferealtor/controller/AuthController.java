@@ -36,7 +36,7 @@ public class AuthController {
         } catch (BaseException be) {
             throw be;
         } catch (Exception e) {
-            throw new BaseException(ErrorCode.FAILED_TO_SEND_VERIFICATION_CODE);
+            throw new BaseException(ErrorCode.FAILED_TO_SEND_VERIFICATION_CODE, e);
         }
     }
 
@@ -67,7 +67,7 @@ public class AuthController {
         } catch (BaseException be) {
             throw be;
         } catch (Exception e) {
-            throw new BaseException(ErrorCode.REGISTRATION_FAILED);
+            throw new BaseException(ErrorCode.REGISTRATION_FAILED, e);
         }
     }
 

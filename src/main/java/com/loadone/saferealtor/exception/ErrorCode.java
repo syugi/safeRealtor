@@ -25,7 +25,13 @@ public enum ErrorCode {
     REGISTRATION_FAILED("회원가입에 실패하였습니다."),
     USER_NOT_FOUND("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
+    //중개사
     FAILED_TO_REGISTER_AGENT("중개사 등록에 실패하였습니다."),
+
+    //매물
+    FAILED_TO_REGISTER_PROPERTY("매물 등록에 실패하였습니다."),
+    PROPERTY_NOT_FOUND("매물을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    FAILED_TO_UPDATE_PROPERTY("매물 수정에 실패하였습니다."),
     ;
 
     private final String message;
