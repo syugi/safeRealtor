@@ -75,11 +75,17 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginReqDTO request) {
 
-        boolean authenticated = authService.login(request.getUserId(), request.getPassword());
-        if (authenticated) {
-            return ResponseEntity.ok("로그인 성공");
-        } else {
-            throw new BaseException(ErrorCode.UNAUTHORIZED, "아이디 혹은 비밀번호를 다시 확인해 주세요.");
+        try {
+            boolean authenticated = authService.login(request.getUserId(), request.getPassword());
+            if (authenticated) {
+                return ResponseEntity.ok("로그인 성공");
+            } else {
+                throw new BaseException(ErrorCode.UNAUTHORIZED, "아이디 혹은 비밀번호를 다시 확인해 주세요.");
+            }
+        } catch (BaseException be) {
+            throw new BaseException(be.getErrorCode(), "아이디 혹은 비밀번호를 다시 확인해 주세요.");
+        } catch (Exception e) {
+            throw new BaseException(ErrorCode.FAILED_TO_LOGIN);
         }
     }
 }

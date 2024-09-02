@@ -17,6 +17,7 @@ public enum ErrorCode {
     EXPIRED_VERIFICATION_CODE("인증번호가 만료되었습니다."),
     FAILED_TO_SEND_VERIFICATION_CODE("인증번호 발송에 실패하였습니다."),
     FAILED_TO_REGISTER_USER("사용자 등록에 실패하였습니다."),
+    FAILED_TO_LOGIN("로그인에 실패하였습니다."),
 
     //사용자
     INVALID_USER_ID("사용 불가능한 아이디 입니다."),

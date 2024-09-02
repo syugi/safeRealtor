@@ -15,7 +15,7 @@ public class GlobalExceptionHandle {
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<ErrorResponse> handleBaseException(BaseException ex) {
         // 로그 기록
-        logger.error("BaseException occurred: {}, HTTP Status: {}", ex.getMessage(), ex.getHttpStatus(), ex);
+        logger.error("BaseException occurred: {} {}, HTTP Status: {}", ex.getErrorCode(), ex.getMessage(), ex.getHttpStatus(), ex);
 
         ErrorResponse response = new ErrorResponse(ex.getErrorCode().name(), ex.getMessage());
         return new ResponseEntity<>(response, ex.getHttpStatus());
