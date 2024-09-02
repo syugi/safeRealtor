@@ -1,11 +1,14 @@
 package com.loadone.saferealtor.service;
 
+import com.loadone.saferealtor.exception.BaseException;
+import com.loadone.saferealtor.exception.ErrorCode;
 import com.loadone.saferealtor.model.dto.RegisterUserReqDTO;
 import com.loadone.saferealtor.model.entity.User;
 import com.loadone.saferealtor.model.entity.VerificationCode;
 import com.loadone.saferealtor.repository.UserRepository;
 import com.loadone.saferealtor.repository.VerificationCodeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -59,7 +62,7 @@ public class AuthService {
     public boolean register(RegisterUserReqDTO request, int userRole) {
 
         if (userRepository.existsByUserId(request.getUserId())) {
-            return false;
+            throw new BaseException(ErrorCode.DUPLICATED_USER_ID, "이미 존재하는 아이디입니다.", HttpStatus.CONFLICT);
         }
 
         User user = new User();
@@ -74,9 +77,9 @@ public class AuthService {
 
     public boolean login(String userId, String password){
         Optional<User> user = userRepository.findByUserId(userId);
-        if(user.isPresent()){
-            return passwordEncoder.matches(password, user.get().getPassword());
+        if(!user.isPresent()) {
+            throw new BaseException(ErrorCode.USER_NOT_FOUND, "아이디 혹은 비밀번호를 다시 확인해 주세요.", HttpStatus.UNAUTHORIZED);
         }
-        return false;
+        return passwordEncoder.matches(password, user.get().getPassword());
     }
 }

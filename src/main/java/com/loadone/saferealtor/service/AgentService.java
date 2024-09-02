@@ -1,5 +1,7 @@
 package com.loadone.saferealtor.service;
 
+import com.loadone.saferealtor.exception.BaseException;
+import com.loadone.saferealtor.exception.ErrorCode;
 import com.loadone.saferealtor.model.dto.RegisterAgentReqDTO;
 import com.loadone.saferealtor.model.dto.RegisterUserReqDTO;
 import com.loadone.saferealtor.model.entity.Agent;
@@ -7,7 +9,10 @@ import com.loadone.saferealtor.model.entity.User;
 import com.loadone.saferealtor.repository.AgentRepository;
 import com.loadone.saferealtor.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,12 +23,13 @@ public class AgentService {
     private final AuthService authService;
 
     // 중개사 등록
-    public boolean registerAgent(RegisterAgentReqDTO request) {
+    @Transactional
+    public void registerAgent(RegisterAgentReqDTO request) {
         if (userRepository.existsByUserId(request.getUserId())) {
-            throw new RuntimeException("이미 사용중 아이디 입니다.");
+            throw new BaseException(ErrorCode.DUPLICATED_USER_ID);
         }
         if (userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
-            throw new RuntimeException("이미 회원가입된 전화번호입니다.");
+            throw new BaseException(ErrorCode.DUPLICATED_PHONE_NUMBER);
         }
 
         boolean isRegister = authService.register(RegisterUserReqDTO.builder()
@@ -33,19 +39,24 @@ public class AgentService {
                 .build(), User.ROLE_AGENT);
 
         if (!isRegister) {
-            throw new RuntimeException("회원가입에 실패하였습니다.");
+            throw new BaseException(ErrorCode.REGISTRATION_FAILED);
         }
 
-        User savedUser = userRepository.findByUserId(request.getUserId()).orElseThrow();
+        try {
+            User savedUser = userRepository.findByUserId(request.getUserId()).orElseThrow();
 
-        Agent agent = new Agent();
-        agent.setUser(savedUser);
-        agent.setEmail(request.getEmail());
-        agent.setLicenseNumber(request.getLicenseNumber());
-        agent.setName(request.getName());
-        agentRepository.save(agent);
+            Agent agent = new Agent();
+            agent.setUser(savedUser);
+            agent.setEmail(request.getEmail());
+            agent.setLicenseNumber(request.getLicenseNumber());
+            agent.setName(request.getName());
+            agentRepository.save(agent);
+        } catch (DataIntegrityViolationException e) {
+            throw new BaseException(ErrorCode.DATA_INTEGRITY_VIOLATION);
+        } catch (JpaSystemException e) {
+            throw new BaseException(ErrorCode.DATABASE_ERROR);
+        }
 
-        return true;
     }
 
     public Agent updateAgent(Agent agent) {
