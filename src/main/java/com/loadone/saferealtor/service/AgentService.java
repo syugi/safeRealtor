@@ -24,7 +24,7 @@ public class AgentService {
 
     // 중개사 등록
     @Transactional
-    public void registerAgent(RegisterAgentReqDTO request) {
+    public Agent registerAgent(RegisterAgentReqDTO request) {
         if (userRepository.existsByUserId(request.getUserId())) {
             throw new BaseException(ErrorCode.DUPLICATED_USER_ID);
         }
@@ -32,31 +32,18 @@ public class AgentService {
             throw new BaseException(ErrorCode.DUPLICATED_PHONE_NUMBER);
         }
 
-        boolean isRegister = authService.register(RegisterUserReqDTO.builder()
+        User user = authService.register(RegisterUserReqDTO.builder()
                 .userId(request.getUserId())
                 .password(request.getPassword())
                 .phoneNumber(request.getPhoneNumber())
                 .build(), User.ROLE_AGENT);
 
-        if (!isRegister) {
-            throw new BaseException(ErrorCode.REGISTRATION_FAILED);
-        }
-
-        try {
-            User savedUser = userRepository.findByUserId(request.getUserId()).orElseThrow();
-
-            Agent agent = new Agent();
-            agent.setUser(savedUser);
-            agent.setEmail(request.getEmail());
-            agent.setLicenseNumber(request.getLicenseNumber());
-            agent.setName(request.getName());
-            agentRepository.save(agent);
-        } catch (DataIntegrityViolationException e) {
-            throw new BaseException(ErrorCode.DATA_INTEGRITY_VIOLATION);
-        } catch (JpaSystemException e) {
-            throw new BaseException(ErrorCode.DATABASE_ERROR);
-        }
-
+        Agent agent = new Agent();
+        agent.setUser(user);
+        agent.setEmail(request.getEmail());
+        agent.setLicenseNumber(request.getLicenseNumber());
+        agent.setName(request.getName());
+        return agentRepository.save(agent);
     }
 
     public Agent updateAgent(Agent agent) {

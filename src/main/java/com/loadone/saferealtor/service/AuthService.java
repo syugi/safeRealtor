@@ -8,13 +8,10 @@ import com.loadone.saferealtor.model.entity.VerificationCode;
 import com.loadone.saferealtor.repository.UserRepository;
 import com.loadone.saferealtor.repository.VerificationCodeRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -27,12 +24,11 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     public boolean isPhoneNumberRegistered(String phoneNumber) {
-        // 전화번호로 사용자를 조회하여 이미 등록된 사용자인지 확인
         return userRepository.existsByPhoneNumber(phoneNumber);
     }
 
     // 인증번호 발송
-    public ResponseEntity<?> sendVerificationCode(String phoneNumber) {
+    public boolean sendVerificationCode(String phoneNumber) {
         // 새로운 인증 코드 생성 및 저장
         String code = generateVerificationCode();
 
@@ -43,9 +39,23 @@ public class AuthService {
         verificationCodeRepository.save(verificationCode);
 
         //SMS 전송
-        smsService.sendSms(phoneNumber, "[안부] 인증번호는 ["+code+"]입니다.");
+        return smsService.sendSms(phoneNumber, "[안부] 인증번호는 ["+code+"]입니다.");
+    }
 
-        return ResponseEntity.ok("인증번호가 발송되었습니다.");
+    // 인증번호 확인
+    public boolean verifyCode(String phoneNumber, String code) {
+        final int MAX_MINUTES = 3;
+        VerificationCode verificationCode = verificationCodeRepository.findTopByPhoneNumberOrderByRequestedAtDesc(phoneNumber).orElseThrow(() -> new BaseException(ErrorCode.INVALID_VERIFICATION_CODE, "인증번호가 존재하지 않습니다."));
+
+        if (!verificationCode.getCode().equals(code)) {
+            throw new BaseException(ErrorCode.INVALID_VERIFICATION_CODE);
+        }
+
+        if (LocalDateTime.now().isAfter(verificationCode.getRequestedAt().plusMinutes(MAX_MINUTES))) {
+            throw new BaseException(ErrorCode.EXPIRED_VERIFICATION_CODE);
+        }
+
+        return true;
     }
 
     // 인증번호 생성
@@ -53,16 +63,19 @@ public class AuthService {
         return String.format("%06d", new Random().nextInt(999999));
     }
 
-    // 사용자명 중복 확인
+    // 사용자 아이디 유효성 체크
     public boolean isUserIdAvailable(String userId) {
-        return !userRepository.existsByUserId(userId);
+        if(userRepository.existsByUserId(userId)){
+            throw new BaseException(ErrorCode.DUPLICATED_USER_ID);
+        }
+
+        return true;
     }
 
     // 사용자 회원가입
-    public boolean register(RegisterUserReqDTO request, int userRole) {
-
-        if (userRepository.existsByUserId(request.getUserId())) {
-            throw new BaseException(ErrorCode.DUPLICATED_USER_ID, "이미 존재하는 아이디입니다.", HttpStatus.CONFLICT);
+    public User register(RegisterUserReqDTO request, int userRole) {
+        if(!isUserIdAvailable(request.getUserId())){
+            throw new BaseException(ErrorCode.INVALID_USER_ID);
         }
 
         User user = new User();
@@ -70,16 +83,16 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setPhoneNumber(request.getPhoneNumber());
         user.setRole(userRole);
-        userRepository.save(user);
-
-        return true;
+        return userRepository.save(user);
     }
 
     public boolean login(String userId, String password){
-        Optional<User> user = userRepository.findByUserId(userId);
-        if(!user.isPresent()) {
-            throw new BaseException(ErrorCode.USER_NOT_FOUND, "아이디 혹은 비밀번호를 다시 확인해 주세요.", HttpStatus.UNAUTHORIZED);
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+
+        if(!passwordEncoder.matches(password, user.getPassword())){
+            throw new BaseException(ErrorCode.INVALID_PASSWORD);
         }
-        return passwordEncoder.matches(password, user.get().getPassword());
+
+        return true;
     }
 }

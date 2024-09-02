@@ -20,18 +20,6 @@ public class BaseException extends RuntimeException {
         this.httpStatus = HttpStatus.BAD_REQUEST;
     }
 
-    public BaseException(ErrorCode errorCode, HttpStatus httpStatus) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
-        this.httpStatus = httpStatus;
-    }
-
-    public BaseException(ErrorCode errorCode, String customMessage, HttpStatus httpStatus) {
-        super(customMessage);
-        this.errorCode = errorCode;
-        this.httpStatus = httpStatus;
-    }
-
     @Override
     public String getMessage() {
         return super.getMessage() != null ? super.getMessage() : errorCode.getMessage();
