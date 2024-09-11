@@ -28,6 +28,7 @@ public class SecurityConfig {
 //                        .requestMatchers("/user/**").hasRole("USER")    // USER 역할만 접근 가능
 //                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
                         .anyRequest().authenticated()
                 );
 //                .logout((logout) -> logout

@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -67,6 +68,11 @@ public class Property {
     private String securityFacilities;  // 보안/안전 시설 (예: CCTV, 경비실)
 
     private String address;
+
+    @ElementCollection // 값 타입 컬렉션 선언
+    @CollectionTable(name = "property_images", joinColumns = @JoinColumn(name = "property_id")) // 매핑될 테이블 설정
+    @Column(name = "image_url") // 이미지 URL 컬럼
+    private List<String> imageUrls;  // 이미지 URL 리스트
 
     @ManyToOne
     @JoinColumn(name = "agent_id")

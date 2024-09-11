@@ -33,6 +33,10 @@ public enum ErrorCode {
     FAILED_TO_REGISTER_PROPERTY("매물 등록에 실패하였습니다."),
     PROPERTY_NOT_FOUND("매물을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     FAILED_TO_UPDATE_PROPERTY("매물 수정에 실패하였습니다."),
+
+    //파일
+    INVALID_FILE_COUNT("파일 갯수가 너무 많습니다.(최대 5개)"),
+    INVALID_FILE_SIZE("파일 크기가 너무 큽니다."),
     ;
 
     private final String message;

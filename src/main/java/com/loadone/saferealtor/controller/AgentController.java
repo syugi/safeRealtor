@@ -29,7 +29,7 @@ public class AgentController {
         } catch (BaseException be) {
             throw be;
         } catch (Exception e) {
-            throw new BaseException(ErrorCode.FAILED_TO_REGISTER_AGENT);
+            throw new BaseException(ErrorCode.FAILED_TO_REGISTER_AGENT,e);
         }
     }
 }

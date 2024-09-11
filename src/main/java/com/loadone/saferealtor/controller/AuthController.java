@@ -50,11 +50,15 @@ public class AuthController {
     /* 사용자명 중복 확인 */
     @GetMapping("/checkUserId")
     public ResponseEntity<String> checkUserId(@RequestParam String userId) {
-        boolean isAvailable = authService.isUserIdAvailable(userId);
-        if(isAvailable){
-            return ResponseEntity.ok().body("사용 가능한 아이디 입니다.");
-        } else {
-            throw new BaseException(ErrorCode.INVALID_USER_ID);
+        try {
+            boolean isAvailable = authService.isUserIdAvailable(userId);
+            if (isAvailable) {
+                return ResponseEntity.ok().body("사용 가능한 아이디 입니다.");
+            } else {
+                throw new BaseException(ErrorCode.INVALID_USER_ID);
+            }
+        }catch (Exception e){
+            throw new BaseException(ErrorCode.INVALID_USER_ID,e);
         }
     }
 
@@ -85,7 +89,7 @@ public class AuthController {
         } catch (BaseException be) {
             throw new BaseException(be.getErrorCode(), "아이디 혹은 비밀번호를 다시 확인해 주세요.");
         } catch (Exception e) {
-            throw new BaseException(ErrorCode.FAILED_TO_LOGIN);
+            throw new BaseException(ErrorCode.FAILED_TO_LOGIN,e);
         }
     }
 }
