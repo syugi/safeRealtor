@@ -2,6 +2,7 @@ package com.loadone.saferealtor.service;
 
 import com.loadone.saferealtor.exception.BaseException;
 import com.loadone.saferealtor.exception.ErrorCode;
+import com.loadone.saferealtor.model.dto.LoginResDTO;
 import com.loadone.saferealtor.model.dto.RegisterUserReqDTO;
 import com.loadone.saferealtor.model.entity.User;
 import com.loadone.saferealtor.model.entity.VerificationCode;
@@ -86,13 +87,13 @@ public class AuthService {
         return userRepository.save(user);
     }
 
-    public boolean login(String userId, String password){
+    public LoginResDTO login(String userId, String password){
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
         if(!passwordEncoder.matches(password, user.getPassword())){
             throw new BaseException(ErrorCode.INVALID_PASSWORD);
         }
 
-        return true;
+        return new LoginResDTO(user.getId(), user.getUserId(), user.getRole());
     }
 }

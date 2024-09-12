@@ -79,8 +79,5 @@ public class Property {
     private Agent agent;
 
     @OneToMany(mappedBy = "property")
-    private Set<Favorite> favorites;
-
-    @OneToMany(mappedBy = "property")
     private Set<Inquiry> inquiries;
 }

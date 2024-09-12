@@ -2,7 +2,7 @@ package com.loadone.saferealtor.service;
 
 import com.loadone.saferealtor.exception.BaseException;
 import com.loadone.saferealtor.exception.ErrorCode;
-import com.loadone.saferealtor.model.dto.PropertyRequestDTO;
+import com.loadone.saferealtor.model.dto.PropertyReqDTO;
 import com.loadone.saferealtor.model.entity.Property;
 import com.loadone.saferealtor.repository.PropertyRepository;
 import com.loadone.saferealtor.util.FileUtil;
@@ -22,7 +22,7 @@ public class PropertyService {
 
     private final FileUtil fileUtil;
 
-    public Property registerProperty(PropertyRequestDTO propertyRequest, List<MultipartFile> images) throws IOException {
+    public Property registerProperty(PropertyReqDTO propertyRequest, List<MultipartFile> images) throws IOException {
         String newPropertyNumber = generateNextPropertyNumber();
 
         // DTO에서 Property 객체로 변환
@@ -81,7 +81,7 @@ public class PropertyService {
         return String.format("%05d", nextNumber);
     }
 
-    public List<Property> getAllProperties() {
+    public List<Property> getProperties() {
         return propertyRepository.findAll();
     }
 

@@ -2,10 +2,7 @@ package com.loadone.saferealtor.controller;
 
 import com.loadone.saferealtor.exception.BaseException;
 import com.loadone.saferealtor.exception.ErrorCode;
-import com.loadone.saferealtor.model.dto.LoginReqDTO;
-import com.loadone.saferealtor.model.dto.PhoneNumberReqDTO;
-import com.loadone.saferealtor.model.dto.RegisterUserReqDTO;
-import com.loadone.saferealtor.model.dto.VerificationReqDTO;
+import com.loadone.saferealtor.model.dto.*;
 import com.loadone.saferealtor.model.entity.User;
 import com.loadone.saferealtor.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -77,15 +74,10 @@ public class AuthController {
 
     /* 로그인 */
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginReqDTO request) {
-
+    public ResponseEntity<LoginResDTO> login(@RequestBody LoginReqDTO request) {
         try {
-            boolean authenticated = authService.login(request.getUserId(), request.getPassword());
-            if (authenticated) {
-                return ResponseEntity.ok("로그인 성공");
-            } else {
-                throw new BaseException(ErrorCode.UNAUTHORIZED, "아이디 혹은 비밀번호를 다시 확인해 주세요.");
-            }
+            LoginResDTO loginResDTO = authService.login(request.getUserId(), request.getPassword());
+            return ResponseEntity.ok(loginResDTO);
         } catch (BaseException be) {
             throw new BaseException(be.getErrorCode(), "아이디 혹은 비밀번호를 다시 확인해 주세요.");
         } catch (Exception e) {

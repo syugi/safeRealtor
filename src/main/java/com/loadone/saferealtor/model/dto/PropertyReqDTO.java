@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
-public class PropertyRequestDTO {
+public class PropertyReqDTO {
     private String propertyNumber;
     private String price;
     private String description;

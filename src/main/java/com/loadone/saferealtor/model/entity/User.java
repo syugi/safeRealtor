@@ -36,8 +36,5 @@ public class User {
     private Agent agent;
 
     @OneToMany(mappedBy = "user")
-    private Set<Favorite> favorites;
-
-    @OneToMany(mappedBy = "user")
     private Set<Inquiry> inquiries;
 }
