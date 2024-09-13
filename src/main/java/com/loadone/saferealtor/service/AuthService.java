@@ -94,6 +94,6 @@ public class AuthService {
             throw new BaseException(ErrorCode.INVALID_PASSWORD);
         }
 
-        return new LoginResDTO(user.getId(), user.getUserId(), user.getRole());
+        return new LoginResDTO(user.getId(), user.getUserId(), user.getRole(), user.getPhoneNumber());
     }
 }
