@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -75,9 +76,11 @@ public class Property {
     private List<String> imageUrls;  // 이미지 URL 리스트
 
     @ManyToOne
-    @JoinColumn(name = "agent_id")
+    @JoinColumn(name = "agent_id", nullable = false)
     private Agent agent;
 
-    @OneToMany(mappedBy = "property")
-    private Set<Inquiry> inquiries;
+    private LocalDateTime registeredAt;  // 매물 등록일
+
+    @ManyToMany(mappedBy = "properties")
+    private Set<Inquiry> inquiries;  // 문의 리스트
 }
