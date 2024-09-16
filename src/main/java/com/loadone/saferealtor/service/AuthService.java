@@ -9,20 +9,24 @@ import com.loadone.saferealtor.model.entity.VerificationCode;
 import com.loadone.saferealtor.repository.UserRepository;
 import com.loadone.saferealtor.repository.VerificationCodeRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+
     private final VerificationCodeRepository verificationCodeRepository;
     private final SmsService smsService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
 
     public boolean isPhoneNumberRegistered(String phoneNumber) {
         return userRepository.existsByPhoneNumber(phoneNumber);
@@ -39,8 +43,20 @@ public class AuthService {
         verificationCode.setRequestedAt(LocalDateTime.now());
         verificationCodeRepository.save(verificationCode);
 
-        //SMS 전송
-        return smsService.sendSms(phoneNumber, "[안부] 인증번호는 ["+code+"]입니다.");
+        // SMS 전송
+        String smsMessage = "[안부] 인증번호는 [" + code + "]입니다.";
+        if (smsService.sendSms(phoneNumber, smsMessage)) {
+            logger.info("Verification code sent to {}: {}", phoneNumber, code);
+            return true;
+        } else {
+            logger.error("Failed to send verification code to {}", phoneNumber);
+            throw new BaseException(ErrorCode.FAILED_TO_SEND_VERIFICATION_CODE);
+        }
+    }
+
+    // 인증번호 생성
+    private String generateVerificationCode() {
+        return String.valueOf((int)(Math.random() * 900000) + 100000);
     }
 
     // 인증번호 확인
@@ -57,11 +73,6 @@ public class AuthService {
         }
 
         return true;
-    }
-
-    // 인증번호 생성
-    private String generateVerificationCode() {
-        return String.format("%06d", new Random().nextInt(999999));
     }
 
     // 사용자 아이디 유효성 체크

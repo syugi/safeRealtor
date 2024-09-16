@@ -37,6 +37,9 @@ public enum ErrorCode {
     //파일
     INVALID_FILE_COUNT("파일 갯수가 너무 많습니다.(최대 5개)"),
     INVALID_FILE_SIZE("파일 크기가 너무 큽니다."),
+
+    //SMS
+    FAILED_TO_SEND_SMS("SMS 발송에 실패하였습니다."),
     ;
 
     private final String message;
