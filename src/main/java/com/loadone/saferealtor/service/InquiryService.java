@@ -10,18 +10,29 @@ import com.loadone.saferealtor.repository.InquiryRepository;
 import com.loadone.saferealtor.repository.PropertyRepository;
 import com.loadone.saferealtor.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class InquiryService {
 
+    Logger logger = LoggerFactory.getLogger(InquiryService.class);
+
+    @Value("${agent.phone-number}")
+    private String agentPhoneNumber;
+
     private final InquiryRepository inquiryRepository;
     private final PropertyRepository propertyRepository;
     private final UserRepository userRepository;
+    private final SmsService smsService;
+
 
     // 문의 저장
     public Inquiry saveInquiry(InquiryReqDTO request) {
@@ -40,6 +51,38 @@ public class InquiryService {
             inquiry.setProperties(selectedProperties);
         }
 
-        return inquiryRepository.save(inquiry);
+        Inquiry savedInquiry = inquiryRepository.save(inquiry);
+
+        // 문자 발송 (문자 발송 실패해도 저장에는 영향 X)
+        try {
+            if (agentPhoneNumber == null || agentPhoneNumber.isEmpty()) {
+                throw new BaseException(ErrorCode.MISSING_AGENT_PHONE_NUMBER);
+            }
+
+            String message = buildSmsMessage(savedInquiry); // 문자 내용 생성
+            smsService.sendSms(agentPhoneNumber, message); // 문자 발송
+        } catch (Exception e) {
+            // 문자 발송 실패 시 로그 출력, 예외 처리 (문의는 이미 저장됨)
+            logger.error("Failed to send SMS for inquiry {}: {}", savedInquiry.getId(), e.getMessage());
+        }
+
+        return savedInquiry;
+    }
+
+    // SMS 메시지 생성 메서드
+    private String buildSmsMessage(Inquiry inquiry) {
+        String customerPhoneNumber = inquiry.getUser().getPhoneNumber();
+        String inquiryContent = inquiry.getInquiryContent();
+        String detailRequest = inquiry.getDetailRequest() != null ? inquiry.getDetailRequest() : "상세 요청 없음";
+
+        // 매물 번호 리스트 생성 (선택적으로 포함)
+        String propertyNumbers = inquiry.getProperties() != null && !inquiry.getProperties().isEmpty()
+                ? inquiry.getProperties().stream()
+                .map(Property::getPropertyNumber)
+                .collect(Collectors.joining(", "))
+                : "매물 선택 없음";
+
+        return String.format("[안부] 새로운 문의가 도착했습니다.\n\n#고객 핸드폰 번호: %s \n\n#매물 번호: %s\n\n#문의 내용: %s\n\n#상세 요청사항: %s",
+                customerPhoneNumber, propertyNumbers,inquiryContent, detailRequest );
     }
 }

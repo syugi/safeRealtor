@@ -13,6 +13,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class SMSUtil {
 
+    @Value("${sms.enable}")
+    private boolean isSmsEnabled;
+
     @Value("${coolsms.api-key}")
     private String apiKey;
 
@@ -31,6 +34,13 @@ public class SMSUtil {
 
     // 단일 메시지 발송
     public String sendSMS(String to, String text){
+
+        if (!isSmsEnabled) {
+            System.out.println("SMS 발송이 비활성화되었습니다. 메시지를 발송하지 않습니다.");
+            System.out.println("text = " + text);
+            return "SMS 발송이 비활성화되었습니다.";
+        }
+
         Message message = new Message(); // 새 메시지 객체 생성
         message.setFrom(fromNumber); // 발신자 번호 설정
         message.setTo(to); // 수신자 번호 설정

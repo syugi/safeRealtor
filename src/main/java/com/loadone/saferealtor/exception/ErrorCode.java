@@ -40,6 +40,7 @@ public enum ErrorCode {
 
     //SMS
     FAILED_TO_SEND_SMS("SMS 발송에 실패하였습니다."),
+    MISSING_AGENT_PHONE_NUMBER("대표 중개사 전화번호가 설정되지 않았습니다."),
     ;
 
     private final String message;
