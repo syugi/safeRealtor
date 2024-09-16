@@ -15,8 +15,8 @@ public class SmsService {
 
     public boolean sendSms(String phoneNumber, String message) {
         try {
-            smsUtil.sendSMS(phoneNumber, message);
-            logger.info("Sending SMS to {}: {}", phoneNumber, message);
+            String result = smsUtil.sendSMS(phoneNumber, message);
+            logger.info("Sending SMS result: {}", result);
             return true;
         } catch (Exception e) {
             logger.error("Failed to send SMS to {}: {}", phoneNumber, e.getMessage());

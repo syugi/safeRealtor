@@ -30,7 +30,7 @@ public class SMSUtil {
     }
 
     // 단일 메시지 발송
-    public void sendSMS(String to, String text){
+    public String sendSMS(String to, String text){
         Message message = new Message(); // 새 메시지 객체 생성
         message.setFrom(fromNumber); // 발신자 번호 설정
         message.setTo(to); // 수신자 번호 설정
@@ -38,6 +38,7 @@ public class SMSUtil {
 
         try {
             this.messageService.sendOne(new SingleMessageSendingRequest(message)); // 메시지 발송 요청
+            return "SMS 전송 성공: " + text;
         } catch (Exception e) {
             throw new BaseException(ErrorCode.FAILED_TO_SEND_SMS, e);
         }
