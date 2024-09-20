@@ -9,6 +9,9 @@ import com.loadone.saferealtor.model.entity.Property;
 import com.loadone.saferealtor.service.FavoriteService;
 import com.loadone.saferealtor.service.PropertyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/properties")
@@ -48,10 +50,11 @@ public class PropertyController {
     }
 
     @GetMapping("/realtor-list")
-    public ResponseEntity<List<PropertyResDTO>> getPropertiesForRealtor() {
+    public ResponseEntity<List<PropertyResDTO>> getPropertiesForRealtor(@RequestParam int page, @RequestParam int perPage) {
         // 공인중개사는 userId 필요 없음
-        List<Property> properties = propertyService.getProperties();
-        List<PropertyResDTO> propertyResponseList = properties.stream()
+        Pageable pageable = PageRequest.of(page - 1, perPage);
+        Page<Property> propertyPage = propertyService.getProperties(pageable);
+        List<PropertyResDTO> propertyResponseList = propertyPage.stream()
                 .map(PropertyResDTO::new) // 찜 여부 없이 매물 정보만 리턴
                 .toList();
         return ResponseEntity.ok(propertyResponseList);
@@ -59,17 +62,19 @@ public class PropertyController {
 
     // 매물 목록 조회
     @GetMapping
-    public ResponseEntity<List<PropertyResDTO>> getProperties(@RequestParam String userId) {
-        List<Property> properties = propertyService.getProperties();
+    public ResponseEntity<List<PropertyResDTO>> getProperties(@RequestParam String userId, @RequestParam int page, @RequestParam int perPage) {
+        Pageable pageable = PageRequest.of(page - 1, perPage);
+        Page<Property> propertyPage = propertyService.getProperties(pageable);
         List<Favorite> favorites = favoriteService.getFavoritesByUserId(userId);
 
-        List<PropertyResDTO> propertyResDTOS = properties.stream()
+        List<PropertyResDTO> propertyResDTOS = propertyPage.stream()
                 .map(property -> {
                     boolean isFavorite = favorites.stream()
                             .anyMatch(favorite -> favorite.getPropertyId().equals(property.getId()));
                     return new PropertyResDTO(property, isFavorite);
                 })
                 .toList();
+
         return ResponseEntity.ok().body(propertyResDTOS);
     }
 

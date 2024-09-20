@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 @Data
 public class PropertyReqDTO {
+    private Long agentId;
     private String propertyNumber;
     private String price;
     private String description;

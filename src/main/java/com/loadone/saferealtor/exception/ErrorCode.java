@@ -28,6 +28,7 @@ public enum ErrorCode {
 
     //중개사
     FAILED_TO_REGISTER_AGENT("중개사 등록에 실패하였습니다."),
+    AGENT_NOT_FOUND("중개사를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
     //매물
     FAILED_TO_REGISTER_PROPERTY("매물 등록에 실패하였습니다."),

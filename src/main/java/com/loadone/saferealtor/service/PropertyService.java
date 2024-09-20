@@ -3,10 +3,14 @@ package com.loadone.saferealtor.service;
 import com.loadone.saferealtor.exception.BaseException;
 import com.loadone.saferealtor.exception.ErrorCode;
 import com.loadone.saferealtor.model.dto.PropertyReqDTO;
+import com.loadone.saferealtor.model.entity.Agent;
 import com.loadone.saferealtor.model.entity.Property;
+import com.loadone.saferealtor.repository.AgentRepository;
 import com.loadone.saferealtor.repository.PropertyRepository;
 import com.loadone.saferealtor.util.FileUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,14 +23,18 @@ import java.util.List;
 public class PropertyService {
 
     private final PropertyRepository propertyRepository;
+    private final AgentRepository agentRepository;
 
     private final FileUtil fileUtil;
 
     public Property registerProperty(PropertyReqDTO propertyRequest, List<MultipartFile> images) throws IOException {
         String newPropertyNumber = generateNextPropertyNumber();
+        Agent agent = agentRepository.findById(propertyRequest.getAgentId())
+                .orElseThrow(() -> new BaseException(ErrorCode.AGENT_NOT_FOUND));
 
         // DTO에서 Property 객체로 변환
         Property property = new Property();
+        property.setAgent(agent);
         property.setPropertyNumber(newPropertyNumber);
         property.setPrice(propertyRequest.getPrice());
         property.setDescription(propertyRequest.getDescription());
@@ -81,8 +89,8 @@ public class PropertyService {
         return String.format("%05d", nextNumber);
     }
 
-    public List<Property> getProperties() {
-        return propertyRepository.findAll();
+    public Page<Property> getProperties(Pageable pageable) {
+        return propertyRepository.findAll(pageable);
     }
 
     public Property getPropertyById(Long id) {
