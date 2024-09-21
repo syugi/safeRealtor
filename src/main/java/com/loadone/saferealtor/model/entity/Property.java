@@ -70,6 +70,14 @@ public class Property {
 
     private String address;
 
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime registeredAt;  // 매물 등록일
+
+    @PrePersist
+    protected void onPersist() {
+        this.registeredAt = LocalDateTime.now();
+    }
+
     @ElementCollection // 값 타입 컬렉션 선언
     @CollectionTable(name = "property_images", joinColumns = @JoinColumn(name = "property_id")) // 매핑될 테이블 설정
     @Column(name = "image_url") // 이미지 URL 컬럼
@@ -79,7 +87,7 @@ public class Property {
     @JoinColumn(name = "agent_id", nullable = false)
     private Agent agent;
 
-    private LocalDateTime registeredAt;  // 매물 등록일
+
 
     @ManyToMany(mappedBy = "properties")
     private Set<Inquiry> inquiries;  // 문의 리스트

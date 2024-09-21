@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -40,6 +41,7 @@ public class PropertyResDTO {
     private String address;  // 주소
     private List<String> imageUrls;  // 이미지 URL 리스트
     private Boolean isFavorite;  // 찜 여부
+    private LocalDateTime registeredAt;  // 등록일시
 
     public PropertyResDTO(Property property) {
         this.id = property.getId();
@@ -68,6 +70,7 @@ public class PropertyResDTO {
         this.address = property.getAddress();
         this.imageUrls = property.getImageUrls();
         this.isFavorite = false; // 찜 여부
+        this.registeredAt = property.getRegisteredAt();
     }
 
     public PropertyResDTO(Property property, boolean isFavorite) {
