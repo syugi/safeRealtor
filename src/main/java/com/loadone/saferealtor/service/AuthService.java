@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -76,18 +77,37 @@ public class AuthService {
     }
 
     // 사용자 아이디 유효성 체크
-    public boolean isUserIdAvailable(String userId) {
+    public void validateUserId(String userId) {
+
+        // 아이디는 5~20자의 영문자와 숫자로 구성, 특수문자 제외
+        String userIdPattern = "^(?=.*[a-zA-Z])[a-zA-Z0-9]{5,20}$";
+        if (!Pattern.matches(userIdPattern, userId)) {
+            throw new BaseException(ErrorCode.INVALID_USER_ID_FORMAT);
+        }
+
         if(userRepository.existsByUserId(userId)){
             throw new BaseException(ErrorCode.DUPLICATED_USER_ID);
         }
+    }
 
-        return true;
+    // 비밀번호 검증 메서드
+    public void validatePassword(String password) {
+//        // 비밀번호는 최소 8~20자, 숫자, 대문자, 소문자, 특수문자 포함
+//        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,20}$";
+        String passwordPattern = "^[A-Za-z\\d@$!%*?&]{4,20}$";
+        if (!Pattern.matches(passwordPattern, password)) {
+            throw new BaseException(ErrorCode.INVALID_PASSWORD_FORMAT);
+        }
     }
 
     // 사용자 회원가입
     public User register(RegisterUserReqDTO request, int userRole) {
-        if(!isUserIdAvailable(request.getUserId())){
-            throw new BaseException(ErrorCode.INVALID_USER_ID);
+
+        try {
+            validateUserId(request.getUserId());
+            validatePassword(request.getPassword());
+        } catch (BaseException e) {
+            throw e;
         }
 
         User user = new User();

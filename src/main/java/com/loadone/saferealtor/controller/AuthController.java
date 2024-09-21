@@ -48,14 +48,12 @@ public class AuthController {
     @GetMapping("/checkUserId")
     public ResponseEntity<String> checkUserId(@RequestParam String userId) {
         try {
-            boolean isAvailable = authService.isUserIdAvailable(userId);
-            if (isAvailable) {
-                return ResponseEntity.ok().body("사용 가능한 아이디 입니다.");
-            } else {
-                throw new BaseException(ErrorCode.INVALID_USER_ID);
-            }
-        }catch (Exception e){
-            throw new BaseException(ErrorCode.INVALID_USER_ID,e);
+            authService.validateUserId(userId);
+            return ResponseEntity.ok().body("사용 가능한 아이디 입니다.");
+        } catch (BaseException be) {
+            throw be;
+        } catch (Exception e) {
+            throw new BaseException(ErrorCode.INVALID_USER_ID, e);
         }
     }
 

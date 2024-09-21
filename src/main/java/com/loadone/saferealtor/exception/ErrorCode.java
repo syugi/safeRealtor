@@ -21,10 +21,13 @@ public enum ErrorCode {
 
     //사용자
     INVALID_USER_ID("사용 불가능한 아이디 입니다."),
+    INVALID_USER_ID_FORMAT("아이디는 4~20자의 영문 대소문자, 숫자로만 입력 가능합니다."),
     DUPLICATED_USER_ID("이미 사용중인 아이디입니다."),
     DUPLICATED_PHONE_NUMBER("이미 회원가입된 전화번호입니다."),
     REGISTRATION_FAILED("회원가입에 실패하였습니다."),
     USER_NOT_FOUND("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    //INVALID_PASSWORD_FORMAT("비밀번호는 8~20자의 영문 대소문자, 숫자, 특수문자로만 입력 가능합니다."),
+    INVALID_PASSWORD_FORMAT("비밀번호는 4~20자의 영문 대소문자, 숫자로만 입력 가능합니다."),
 
     //중개사
     FAILED_TO_REGISTER_AGENT("중개사 등록에 실패하였습니다."),
