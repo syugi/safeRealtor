@@ -37,6 +37,7 @@ public class PropertyService {
         property.setAgent(agent);
         property.setPropertyNumber(newPropertyNumber);
         property.setPrice(propertyRequest.getPrice());
+        property.setTitle(propertyRequest.getTitle());
         property.setDescription(propertyRequest.getDescription());
         property.setType(propertyRequest.getType());
         property.setMaintenanceFee(propertyRequest.getMaintenanceFee());
