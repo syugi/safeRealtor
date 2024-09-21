@@ -6,6 +6,8 @@ import com.loadone.saferealtor.repository.FavoriteRepository;
 import com.loadone.saferealtor.repository.PropertyRepository;
 import com.loadone.saferealtor.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,11 +31,17 @@ public class FavoriteService {
                 .ifPresent(favoriteRepository::delete);
     }
 
-    public List<Property> getFavoriteProperties(String userId) {
-        List<Favorite> favorites = favoriteRepository.findByUserId(userId);
-        return propertyRepository.findAllById(favorites.stream()
+    public Page<Property> getFavoriteProperties(String userId, Pageable pageable) {
+        // 페이징된 Favorite 목록 가져오기
+        Page<Favorite> favoritePage = favoriteRepository.findByUserId(userId, pageable);
+
+        // Favorite에서 Property ID 목록 추출
+        List<Long> propertyIds = favoritePage.getContent().stream()
                 .map(Favorite::getPropertyId)
-                .toList());
+                .toList();
+
+        // 페이징된 Property 목록 가져오기
+        return propertyRepository.findAllByIdIn(propertyIds, pageable);
     }
 
     public List<Favorite> getFavoritesByUserId(String userId) {
