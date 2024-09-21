@@ -1,5 +1,6 @@
 package com.loadone.saferealtor.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -89,8 +90,7 @@ public class Property {
     @JoinColumn(name = "agent_id", nullable = false)
     private Agent agent;
 
-
-
     @ManyToMany(mappedBy = "properties")
+    @JsonBackReference // 직렬화 시 역방향 참조를 방지
     private Set<Inquiry> inquiries;  // 문의 리스트
 }

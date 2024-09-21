@@ -1,5 +1,6 @@
 package com.loadone.saferealtor.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -37,5 +38,7 @@ public class Inquiry {
             joinColumns = @JoinColumn(name = "inquiry_id"),
             inverseJoinColumns = @JoinColumn(name = "property_id")
     )
+
+    @JsonManagedReference // 직렬화 시 이 참조가 포함됨
     private List<Property> properties;  // 문의한 매물 목록 (선택적)
 }

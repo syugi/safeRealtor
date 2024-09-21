@@ -39,6 +39,7 @@ public class SmsService {
                 .errorMessage(errorMessage)
                 .sentAt(LocalDateTime.now())
                 .build();
+
         smsLogRepository.save(smsLog);
 
         return success;

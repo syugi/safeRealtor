@@ -1,9 +1,11 @@
 package com.loadone.saferealtor.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+
 import java.util.Set;
 
 @Entity
@@ -25,6 +27,7 @@ public class Agent {
 
     @OneToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference // 직렬화 시 역방향 참조를 방지
     private User user;
 
     @OneToMany(mappedBy = "agent")

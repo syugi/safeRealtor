@@ -32,9 +32,6 @@ public class User {
     @Column(nullable = false)
     private int role; //구분 (0:관리자, 1:공인중개사, 2:사용자)
 
-    @OneToOne(mappedBy = "user")
-    private Agent agent;
-
     @OneToMany(mappedBy = "user")
     private Set<Inquiry> inquiries;
 }
