@@ -70,7 +70,7 @@ public class Property {
 
     private String securityFacilities;  // 보안/안전 시설 (예: CCTV, 경비실)
 
-    private String address;
+    private String address; // 매물 주소
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime registeredAt;  // 매물 등록일
