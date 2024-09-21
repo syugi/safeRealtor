@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: safeRealtor
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/saferealtor
+    username:
+    password:
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    hibernate:
+      ddl-auto: update
+
+  servlet:
+    multipart:
+      max-file-size: 1GB
+      max-request-size: 1GB
+
+file:
+  upload-path:
+
+sms:
+  enable: false
+
+coolsms:
+  api-key:
+  api-secret:
+  from-number:
+
+agent:
+  phone-number:
