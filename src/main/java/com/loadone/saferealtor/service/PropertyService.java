@@ -95,7 +95,7 @@ public class PropertyService {
     }
 
     public Property getPropertyById(Long id) {
-        return propertyRepository.findById(id).orElseThrow();
+        return propertyRepository.findById(id).orElseThrow(() -> new BaseException(ErrorCode.PROPERTY_NOT_FOUND));
     }
 
     @Transactional

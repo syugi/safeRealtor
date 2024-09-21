@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +43,7 @@ public class PropertyController {
         }
     }
 
-    // 매물 조회
+    // 매물 단건 조회
     @GetMapping("/{id}")
     public ResponseEntity<Property> getProperty(@PathVariable Long id) {
         Property property = propertyService.getPropertyById(id);
@@ -52,7 +53,7 @@ public class PropertyController {
     @GetMapping("/realtor-list")
     public ResponseEntity<List<PropertyResDTO>> getPropertiesForRealtor(@RequestParam int page, @RequestParam int perPage) {
         // 공인중개사는 userId 필요 없음
-        Pageable pageable = PageRequest.of(page - 1, perPage);
+        Pageable pageable = PageRequest.of(page - 1, perPage, Sort.by("registeredAt").descending());
         Page<Property> propertyPage = propertyService.getProperties(pageable);
         List<PropertyResDTO> propertyResponseList = propertyPage.stream()
                 .map(PropertyResDTO::new) // 찜 여부 없이 매물 정보만 리턴
@@ -63,7 +64,7 @@ public class PropertyController {
     // 매물 목록 조회
     @GetMapping
     public ResponseEntity<List<PropertyResDTO>> getProperties(@RequestParam String userId, @RequestParam int page, @RequestParam int perPage) {
-        Pageable pageable = PageRequest.of(page - 1, perPage);
+        Pageable pageable = PageRequest.of(page - 1, perPage, Sort.by("registeredAt").descending());
         Page<Property> propertyPage = propertyService.getProperties(pageable);
         List<Favorite> favorites = favoriteService.getFavoritesByUserId(userId);
 
