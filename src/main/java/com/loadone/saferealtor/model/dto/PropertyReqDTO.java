@@ -11,6 +11,7 @@ public class PropertyReqDTO {
     private Long agentId;
     private String propertyNumber;
     private String price;
+    private String title;
     private String description;
     private PropertyType type;
     private String maintenanceFee;

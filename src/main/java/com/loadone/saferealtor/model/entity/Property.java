@@ -27,7 +27,9 @@ public class Property {
     private String price;  // 매물의 가격
 
     @Column(nullable = false)
-    private String description;  // 매물에 대한 간단한 설명
+    private String title;// 매물 제목
+
+    private String description;  // 매물 설명
 
     @Enumerated(EnumType.STRING)
     private PropertyType type;  // 매물의 종류 (전세, 월세, 매매)

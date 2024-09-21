@@ -18,6 +18,7 @@ public class PropertyResDTO {
     private Long id;  // 매물 ID
     private String propertyNumber;  // 매물 번호
     private String price;  // 매물의 가격
+    private String title; // 매물 제목
     private String description;  // 매물 설명
     private PropertyType type;  // 매물 종류 (전세, 월세, 매매)
     private String maintenanceFee;  // 관리비
@@ -47,6 +48,7 @@ public class PropertyResDTO {
         this.id = property.getId();
         this.propertyNumber = property.getPropertyNumber();
         this.price = property.getPrice();
+        this.title = property.getTitle();
         this.description = property.getDescription();
         this.type = property.getType();
         this.maintenanceFee = property.getMaintenanceFee();
