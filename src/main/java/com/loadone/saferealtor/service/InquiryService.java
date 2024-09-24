@@ -10,8 +10,7 @@ import com.loadone.saferealtor.repository.InquiryRepository;
 import com.loadone.saferealtor.repository.PropertyRepository;
 import com.loadone.saferealtor.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +18,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class InquiryService {
-
-    Logger logger = LoggerFactory.getLogger(InquiryService.class);
 
     @Value("${agent.phone-number}")
     private String agentPhoneNumber;
@@ -63,7 +61,7 @@ public class InquiryService {
             smsService.sendSms(agentPhoneNumber, message); // 문자 발송
         } catch (Exception e) {
             // 문자 발송 실패 시 로그 출력, 예외 처리 (문의는 이미 저장됨)
-            logger.error("Failed to send SMS for inquiry {}: {}", savedInquiry.getId(), e.getMessage());
+            log.error("Failed to send SMS for inquiry {}: {}", savedInquiry.getId(), e.getMessage());
         }
 
         return savedInquiry;

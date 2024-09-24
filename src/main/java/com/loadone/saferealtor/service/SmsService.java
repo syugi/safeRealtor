@@ -4,17 +4,16 @@ import com.loadone.saferealtor.model.entity.SmsLog;
 import com.loadone.saferealtor.repository.SmsLogRepository;
 import com.loadone.saferealtor.util.SMSUtil;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class SmsService {
 
-    private static final Logger logger = LoggerFactory.getLogger(SmsService.class);
     private final SMSUtil smsUtil;
     private final SmsLogRepository smsLogRepository;
 
@@ -25,10 +24,10 @@ public class SmsService {
         try {
             String result = smsUtil.sendSMS(phoneNumber, message);
             success = true;
-            logger.info("Sending SMS result: {}", result);
+            log.info("Sending SMS result: {}", result);
         } catch (Exception e) {
             errorMessage = e.getMessage();
-            logger.error("Failed to send SMS to {}: {}", phoneNumber, e.getMessage());
+            log.error("Failed to send SMS to {}: {}", phoneNumber, e.getMessage());
         }
 
         // 발송 내역 저장
