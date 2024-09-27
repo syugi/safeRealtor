@@ -1,7 +1,7 @@
 package com.loadone.saferealtor.controller;
 
 import com.loadone.saferealtor.model.dto.FavoriteReqDTO;
-import com.loadone.saferealtor.model.dto.PropertyResDTO;
+import com.loadone.saferealtor.model.dto.PropertyDTO;
 import com.loadone.saferealtor.model.entity.Property;
 import com.loadone.saferealtor.service.FavoriteService;
 import lombok.RequiredArgsConstructor;
@@ -36,12 +36,12 @@ public class FavoriteController {
 
     // 찜한 매물 조회
     @GetMapping("/{userId}")
-    public ResponseEntity<List<PropertyResDTO>> getFavoriteProperties(@PathVariable String userId, @RequestParam int page, @RequestParam int perPage) {
+    public ResponseEntity<List<PropertyDTO>> getFavoriteProperties(@PathVariable String userId, @RequestParam int page, @RequestParam int perPage) {
         Pageable pageable = PageRequest.of(page - 1, perPage);
         Page<Property> propertyPage = favoriteService.getFavoriteProperties(userId, pageable);
-        List<PropertyResDTO> propertyResDTOS = propertyPage.stream().map(
+        List<PropertyDTO> propertyResDTOS = propertyPage.stream().map(
                 property -> {
-                    PropertyResDTO dto = new PropertyResDTO(property);
+                    PropertyDTO dto = new PropertyDTO(property);
                     dto.setIsFavorite(true);
                     return dto;
                 }).toList();

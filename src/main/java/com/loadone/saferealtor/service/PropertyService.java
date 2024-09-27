@@ -2,7 +2,7 @@ package com.loadone.saferealtor.service;
 
 import com.loadone.saferealtor.exception.BaseException;
 import com.loadone.saferealtor.exception.ErrorCode;
-import com.loadone.saferealtor.model.dto.PropertyReqDTO;
+import com.loadone.saferealtor.model.dto.PropertyDTO;
 import com.loadone.saferealtor.model.entity.Agent;
 import com.loadone.saferealtor.model.entity.Property;
 import com.loadone.saferealtor.repository.AgentRepository;
@@ -27,38 +27,15 @@ public class PropertyService {
 
     private final FileUtil fileUtil;
 
-    public Property registerProperty(PropertyReqDTO propertyRequest, List<MultipartFile> images) throws IOException {
+    public Property registerProperty(PropertyDTO propertyDTO, List<MultipartFile> images) throws IOException {
         String newPropertyNumber = generateNextPropertyNumber();
-        Agent agent = agentRepository.findById(propertyRequest.getAgentId())
+        Agent agent = agentRepository.findById(propertyDTO.getAgentId())
                 .orElseThrow(() -> new BaseException(ErrorCode.AGENT_NOT_FOUND));
 
         // DTO에서 Property 객체로 변환
-        Property property = new Property();
+        Property property = propertyDTO.toEntity();
         property.setAgent(agent);
         property.setPropertyNumber(newPropertyNumber);
-        property.setPrice(propertyRequest.getPrice());
-        property.setTitle(propertyRequest.getTitle());
-        property.setDescription(propertyRequest.getDescription());
-        property.setType(propertyRequest.getType());
-        property.setMaintenanceFee(propertyRequest.getMaintenanceFee());
-        property.setParkingAvailable(propertyRequest.getParkingAvailable());
-        property.setRoomType(propertyRequest.getRoomType());
-        property.setFloor(propertyRequest.getFloor());
-        property.setArea(propertyRequest.getArea());
-        property.setRooms(propertyRequest.getRooms());
-        property.setBathrooms(propertyRequest.getBathrooms());
-        property.setDirection(propertyRequest.getDirection());
-        property.setHeatingType(propertyRequest.getHeatingType());
-        property.setElevatorAvailable(propertyRequest.getElevatorAvailable());
-        property.setTotalParkingSlots(propertyRequest.getTotalParkingSlots());
-        property.setEntranceType(propertyRequest.getEntranceType());
-        property.setAvailableMoveInDate(propertyRequest.getAvailableMoveInDate());
-        property.setBuildingUse(propertyRequest.getBuildingUse());
-        property.setApprovalDate(propertyRequest.getApprovalDate());
-        property.setFirstRegistrationDate(propertyRequest.getFirstRegistrationDate());
-        property.setOptions(propertyRequest.getOptions());
-        property.setSecurityFacilities(propertyRequest.getSecurityFacilities());
-        property.setAddress(propertyRequest.getAddress());
 
         // 이미지 처리 (이미지 경로 저장)
         if (images != null && !images.isEmpty()) {

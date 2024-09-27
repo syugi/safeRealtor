@@ -2,8 +2,7 @@ package com.loadone.saferealtor.controller;
 
 import com.loadone.saferealtor.exception.BaseException;
 import com.loadone.saferealtor.exception.ErrorCode;
-import com.loadone.saferealtor.model.dto.PropertyReqDTO;
-import com.loadone.saferealtor.model.dto.PropertyResDTO;
+import com.loadone.saferealtor.model.dto.PropertyDTO;
 import com.loadone.saferealtor.model.entity.Favorite;
 import com.loadone.saferealtor.model.entity.Property;
 import com.loadone.saferealtor.service.FavoriteService;
@@ -31,10 +30,10 @@ public class PropertyController {
 
     // 매물 등록
     @PostMapping(value = "/register", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<Property> registerProperty(@RequestPart("property") PropertyReqDTO propertyRequest,
+    public ResponseEntity<Property> registerProperty(@RequestPart("property") PropertyDTO propertyDTO,
                                                      @RequestPart(value = "images", required = false) List<MultipartFile> images) {
         try {
-            Property property = propertyService.registerProperty(propertyRequest, images);
+            Property property = propertyService.registerProperty(propertyDTO, images);
             return ResponseEntity.status(HttpStatus.CREATED).body(property);
         } catch (BaseException be) {
             throw be;
@@ -51,28 +50,28 @@ public class PropertyController {
     }
 
     @GetMapping("/realtor-list")
-    public ResponseEntity<List<PropertyResDTO>> getPropertiesForRealtor(@RequestParam int page, @RequestParam int perPage) {
+    public ResponseEntity<List<PropertyDTO>> getPropertiesForRealtor(@RequestParam int page, @RequestParam int perPage) {
         // 공인중개사는 userId 필요 없음
         Pageable pageable = PageRequest.of(page - 1, perPage, Sort.by("registeredAt").descending());
         Page<Property> propertyPage = propertyService.getProperties(pageable);
-        List<PropertyResDTO> propertyResponseList = propertyPage.stream()
-                .map(PropertyResDTO::new) // 찜 여부 없이 매물 정보만 리턴
+        List<PropertyDTO> propertyResponseList = propertyPage.stream()
+                .map(PropertyDTO::new) // 찜 여부 없이 매물 정보만 리턴
                 .toList();
         return ResponseEntity.ok(propertyResponseList);
     }
 
     // 매물 목록 조회
     @GetMapping
-    public ResponseEntity<List<PropertyResDTO>> getProperties(@RequestParam String userId, @RequestParam int page, @RequestParam int perPage) {
+    public ResponseEntity<List<PropertyDTO>> getProperties(@RequestParam String userId, @RequestParam int page, @RequestParam int perPage) {
         Pageable pageable = PageRequest.of(page - 1, perPage, Sort.by("registeredAt").descending());
         Page<Property> propertyPage = propertyService.getProperties(pageable);
         List<Favorite> favorites = favoriteService.getFavoritesByUserId(userId);
 
-        List<PropertyResDTO> propertyResDTOS = propertyPage.stream()
+        List<PropertyDTO> propertyResDTOS = propertyPage.stream()
                 .map(property -> {
                     boolean isFavorite = favorites.stream()
                             .anyMatch(favorite -> favorite.getPropertyId().equals(property.getId()));
-                    return new PropertyResDTO(property, isFavorite);
+                    return new PropertyDTO(property, isFavorite);
                 })
                 .toList();
 

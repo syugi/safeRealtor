@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PropertyResDTO {
+public class PropertyDTO {
     private Long id;  // 매물 ID
     private String propertyNumber;  // 매물 번호
     private String price;  // 매물의 가격
@@ -44,7 +44,10 @@ public class PropertyResDTO {
     private Boolean isFavorite;  // 찜 여부
     private LocalDateTime registeredAt;  // 등록일시
 
-    public PropertyResDTO(Property property) {
+
+    private Long agentId;  // 중개인 ID
+
+    public PropertyDTO(Property property) {
         this.id = property.getId();
         this.propertyNumber = property.getPropertyNumber();
         this.price = property.getPrice();
@@ -75,8 +78,37 @@ public class PropertyResDTO {
         this.registeredAt = property.getRegisteredAt();
     }
 
-    public PropertyResDTO(Property property, boolean isFavorite) {
+    public PropertyDTO(Property property, boolean isFavorite) {
         this(property);
         this.isFavorite = isFavorite; // 찜 여부
+    }
+
+    public Property toEntity() {
+        return Property.builder()
+                .propertyNumber(propertyNumber)
+                .price(price)
+                .title(title)
+                .description(description)
+                .type(type)
+                .maintenanceFee(maintenanceFee)
+                .parkingAvailable(parkingAvailable)
+                .roomType(roomType)
+                .floor(floor)
+                .area(area)
+                .rooms(rooms)
+                .bathrooms(bathrooms)
+                .direction(direction)
+                .heatingType(heatingType)
+                .elevatorAvailable(elevatorAvailable)
+                .totalParkingSlots(totalParkingSlots)
+                .entranceType(entranceType)
+                .availableMoveInDate(availableMoveInDate)
+                .buildingUse(buildingUse)
+                .approvalDate(approvalDate)
+                .firstRegistrationDate(firstRegistrationDate)
+                .options(options)
+                .securityFacilities(securityFacilities)
+                .address(address)
+                .build();
     }
 }
