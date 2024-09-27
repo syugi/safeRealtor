@@ -3,12 +3,16 @@ package com.loadone.saferealtor.model.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Data
 @NoArgsConstructor
+@EntityListeners(value = {AuditingEntityListener.class})
 public class Favorite {
 
     @Id
@@ -21,13 +25,11 @@ public class Favorite {
     @Column(name = "property_id", nullable = false)
     private Long propertyId;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime registeredAt;
+    @CreatedDate
+    private LocalDateTime createdAt;
 
-    @PrePersist
-    protected void onPersist() {
-        this.registeredAt = LocalDateTime.now();
-    }
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
     public Favorite(String userId, Long propertyId) {
         this.userId = userId;

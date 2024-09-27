@@ -4,12 +4,18 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(value = {AuditingEntityListener.class})
 public class User {
 
     public static final int ROLE_ADMIN = 0;
@@ -34,4 +40,10 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private Set<Inquiry> inquiries;
+
+    @CreatedDate
+    private LocalDateTime createdAt;  // 회원 가입일
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;  // 최근 정보 수정일
 }

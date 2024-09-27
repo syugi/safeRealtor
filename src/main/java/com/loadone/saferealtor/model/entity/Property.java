@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,6 +21,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(value = {AuditingEntityListener.class})
 public class Property {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -75,13 +79,11 @@ public class Property {
 
     private String address; // 매물 주소
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime registeredAt;  // 매물 등록일
+    @CreatedDate
+    private LocalDateTime createdAt;  // 매물 등록일
 
-    @PrePersist
-    protected void onPersist() {
-        this.registeredAt = LocalDateTime.now();
-    }
+    @LastModifiedDate
+    private LocalDateTime updatedAt;  // 매물 수정일
 
     @ElementCollection // 값 타입 컬렉션 선언
     @CollectionTable(name = "property_images", joinColumns = @JoinColumn(name = "property_id")) // 매핑될 테이블 설정

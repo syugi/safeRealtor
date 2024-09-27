@@ -22,7 +22,7 @@ public class PageReqDTO {
 
     public Pageable getPageable() {
         // 최신 등록순으로 정렬
-        return this.getPageable(Sort.by("registeredAt").descending());
+        return this.getPageable(Sort.by("createAt").descending());
     }
 
     public Pageable getPageable(Sort sort) {

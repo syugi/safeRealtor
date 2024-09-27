@@ -41,7 +41,6 @@ public class InquiryService {
         inquiry.setUser(user);
         inquiry.setInquiryContent(request.getInquiryContent());
         inquiry.setDetailRequest(request.getDetailRequest());
-        inquiry.setInquiryDateTime(LocalDateTime.now());
 
         // 매물이 선택된 경우 처리
         if (request.getPropertyNumbers() != null && !request.getPropertyNumbers().isEmpty()) {

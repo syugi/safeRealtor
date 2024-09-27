@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,8 +31,11 @@ public class Inquiry {
     @Lob
     private String detailRequest; //상세 요청사항
 
-    private LocalDateTime inquiryDateTime; // 문의한 시간
+    @CreatedDate
+    private LocalDateTime createAt; // 문의한 날짜
 
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
     @ManyToMany
     @JoinTable(
