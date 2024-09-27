@@ -2,6 +2,7 @@ package com.loadone.saferealtor.controller;
 
 import com.loadone.saferealtor.exception.BaseException;
 import com.loadone.saferealtor.exception.ErrorCode;
+import com.loadone.saferealtor.model.dto.PageReqDTO;
 import com.loadone.saferealtor.model.dto.PropertyDTO;
 import com.loadone.saferealtor.model.entity.Favorite;
 import com.loadone.saferealtor.model.entity.Property;
@@ -9,9 +10,7 @@ import com.loadone.saferealtor.service.FavoriteService;
 import com.loadone.saferealtor.service.PropertyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -52,7 +51,9 @@ public class PropertyController {
     @GetMapping("/realtor-list")
     public ResponseEntity<List<PropertyDTO>> getPropertiesForRealtor(@RequestParam int page, @RequestParam int perPage) {
         // 공인중개사는 userId 필요 없음
-        Pageable pageable = PageRequest.of(page - 1, perPage, Sort.by("registeredAt").descending());
+        PageReqDTO pageReqDTO = PageReqDTO.builder().page(page).perPage(perPage).build();
+        Pageable pageable = pageReqDTO.getPageable();
+
         Page<Property> propertyPage = propertyService.getProperties(pageable);
         List<PropertyDTO> propertyResponseList = propertyPage.stream()
                 .map(PropertyDTO::new) // 찜 여부 없이 매물 정보만 리턴
@@ -63,7 +64,9 @@ public class PropertyController {
     // 매물 목록 조회
     @GetMapping
     public ResponseEntity<List<PropertyDTO>> getProperties(@RequestParam String userId, @RequestParam int page, @RequestParam int perPage) {
-        Pageable pageable = PageRequest.of(page - 1, perPage, Sort.by("registeredAt").descending());
+        PageReqDTO pageReqDTO = PageReqDTO.builder().page(page).perPage(perPage).build();
+        Pageable pageable = pageReqDTO.getPageable();
+
         Page<Property> propertyPage = propertyService.getProperties(pageable);
         List<Favorite> favorites = favoriteService.getFavoritesByUserId(userId);
 
