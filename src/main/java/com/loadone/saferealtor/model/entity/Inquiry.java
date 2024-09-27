@@ -32,7 +32,7 @@ public class Inquiry {
     private String detailRequest; //상세 요청사항
 
     @CreatedDate
-    private LocalDateTime createAt; // 문의한 날짜
+    private LocalDateTime createdAt; // 문의한 날짜
 
     @LastModifiedDate
     private LocalDateTime updatedAt;

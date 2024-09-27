@@ -42,7 +42,7 @@ public class PropertyDTO {
     private String address;  // 주소
     private List<String> imageUrls;  // 이미지 URL 리스트
     private Boolean isFavorite;  // 찜 여부
-    private LocalDateTime createAt;  // 등록일시
+    private LocalDateTime createdAt;  // 등록일시
 
 
     private Long agentId;  // 중개인 ID
@@ -75,6 +75,7 @@ public class PropertyDTO {
         this.address = property.getAddress();
         this.imageUrls = property.getImageUrls();
         this.isFavorite = false; // 찜 여부
+        this.createdAt = property.getCreatedAt();
     }
 
     public PropertyDTO(Property property, boolean isFavorite) {

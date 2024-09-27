@@ -60,6 +60,12 @@ public class AuthController {
     /* 회원가입 */
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody RegisterUserReqDTO request) {
+
+        // 이미 가입된 번호인지 확인
+        if (authService.isPhoneNumberRegistered(request.getPhoneNumber())) {
+            throw new BaseException(ErrorCode.DUPLICATED_PHONE_NUMBER);
+        }
+
         try {
             User user = authService.register(request, User.ROLE_USER);
             return ResponseEntity.status(HttpStatus.CREATED).body(user);
