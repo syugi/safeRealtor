@@ -6,4 +6,5 @@ import lombok.Data;
 public class LoginReqDTO {
     private String userId;
     private String password;
+    private String jwtToken;
 }

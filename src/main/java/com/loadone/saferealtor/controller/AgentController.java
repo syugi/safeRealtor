@@ -3,6 +3,7 @@ package com.loadone.saferealtor.controller;
 import com.loadone.saferealtor.exception.BaseException;
 import com.loadone.saferealtor.exception.ErrorCode;
 import com.loadone.saferealtor.model.dto.RegisterAgentReqDTO;
+import com.loadone.saferealtor.model.dto.RegisterAgentResDTO;
 import com.loadone.saferealtor.model.entity.Agent;
 import com.loadone.saferealtor.service.AgentService;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +23,13 @@ public class AgentController {
 
     // 중개사 등록
     @PostMapping("/register")
-    public ResponseEntity<Agent> registerAgent(@RequestBody RegisterAgentReqDTO request) {
+    public ResponseEntity<RegisterAgentResDTO> registerAgent(@RequestBody RegisterAgentReqDTO request) {
         try {
             Agent agent = agentService.registerAgent(request);
-            return ResponseEntity.status(HttpStatus.CREATED).body(agent);
+
+            RegisterAgentResDTO response = new RegisterAgentResDTO(agent);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (BaseException be) {
             throw be;
         } catch (Exception e) {

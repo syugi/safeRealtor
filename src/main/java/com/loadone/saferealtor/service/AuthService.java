@@ -4,12 +4,20 @@ import com.loadone.saferealtor.exception.BaseException;
 import com.loadone.saferealtor.exception.ErrorCode;
 import com.loadone.saferealtor.model.dto.LoginResDTO;
 import com.loadone.saferealtor.model.dto.RegisterUserReqDTO;
+import com.loadone.saferealtor.model.dto.UserInfoDTO;
+import com.loadone.saferealtor.model.entity.CustomUserDetails;
+import com.loadone.saferealtor.model.entity.Role;
 import com.loadone.saferealtor.model.entity.User;
 import com.loadone.saferealtor.model.entity.VerificationCode;
 import com.loadone.saferealtor.repository.UserRepository;
 import com.loadone.saferealtor.repository.VerificationCodeRepository;
+import com.loadone.saferealtor.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +33,8 @@ public class AuthService {
     private final SmsService smsService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
     public boolean isPhoneNumberRegistered(String phoneNumber) {
         return userRepository.existsByPhoneNumber(phoneNumber);
@@ -98,12 +108,13 @@ public class AuthService {
     }
 
     // 사용자 회원가입
-    public User register(RegisterUserReqDTO request, int userRole) {
+    public User registerUser(RegisterUserReqDTO request, Role role) {
 
         try {
             validateUserId(request.getUserId());
             validatePassword(request.getPassword());
         } catch (BaseException e) {
+            log.error("Failed to register user: {}", e.getMessage());
             throw e;
         }
 
@@ -111,17 +122,39 @@ public class AuthService {
         user.setUserId(request.getUserId());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setPhoneNumber(request.getPhoneNumber());
-        user.setRole(userRole);
+        user.setRole(role.getValue());
         return userRepository.save(user);
     }
 
     public LoginResDTO login(String userId, String password){
-        User user = userRepository.findByUserId(userId).orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
-        if(!passwordEncoder.matches(password, user.getPassword())){
-            throw new BaseException(ErrorCode.INVALID_PASSWORD);
+        try {
+            // 아이디, 비밀번호로 인증
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userId, password));
+
+            // 인증 정보에서 사용자 정보를 가져옴
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            User user = userDetails.getUser();
+
+            UserInfoDTO userInfo = UserInfoDTO.builder()
+                    .userId(user.getUserId())
+                    .role(user.getRole())
+                    .build();
+
+            String jwtToken = jwtUtil.createAccessToken(userInfo);
+
+            return LoginResDTO.builder()
+                    .userId(user.getUserId())
+                    .role(user.getRole())
+                    .jwtToken(jwtToken)
+                    .build();
+
+        } catch (BadCredentialsException e) {
+            // 비밀번호 불일치 등의 인증 실패 처리
+            throw new BaseException(ErrorCode.INVALID_ID_PASSWORD);
+        } catch (Exception e) {
+            // 기타 예외 처리
+            throw new BaseException(ErrorCode.FAILED_TO_LOGIN, e);
         }
-
-        return new LoginResDTO(user.getId(), user.getUserId(), user.getRole(), user.getPhoneNumber());
     }
 }

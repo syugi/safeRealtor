@@ -11,13 +11,17 @@ public enum ErrorCode {
     DATA_INTEGRITY_VIOLATION("데이터 무결성 오류가 발생했습니다."),
 
     //인증
-    INVALID_PASSWORD("비밀번호가 일치하지 않습니다."),
-    UNAUTHORIZED("인증되지 않은 사용자입니다.", HttpStatus.UNAUTHORIZED),
+    INVALID_ID_PASSWORD("아이디 혹은 비밀번호가 일치하지 않습니다."),
     INVALID_VERIFICATION_CODE("인증번호가 일치하지 않습니다."),
     EXPIRED_VERIFICATION_CODE("인증번호가 만료되었습니다."),
     FAILED_TO_SEND_VERIFICATION_CODE("인증번호 발송에 실패하였습니다."),
     FAILED_TO_REGISTER_USER("사용자 등록에 실패하였습니다."),
     FAILED_TO_LOGIN("로그인에 실패하였습니다."),
+
+    //토큰
+    MISSING_TOKEN("토큰을 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED),
+    INVALID_TOKEN("유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED),
+    JWT_SECRET_KEY_GENERATION_FAILED("JWT 비밀키 생성에 실패하였습니다."),
 
     //사용자
     INVALID_USER_ID("사용 불가능한 아이디 입니다."),

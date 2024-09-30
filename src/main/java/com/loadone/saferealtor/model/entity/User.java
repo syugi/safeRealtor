@@ -2,6 +2,7 @@ package com.loadone.saferealtor.model.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,16 +13,13 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 
+@Builder
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(value = {AuditingEntityListener.class})
 public class User {
-
-    public static final int ROLE_ADMIN = 0;
-    public static final int ROLE_AGENT = 1;
-    public static final int ROLE_USER = 2;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,4 +45,8 @@ public class User {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;  // 최근 정보 수정일
+
+    public String getRoleName() {
+        return Role.getName(role);
+    }
 }

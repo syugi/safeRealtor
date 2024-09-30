@@ -5,12 +5,11 @@ import com.loadone.saferealtor.exception.ErrorCode;
 import com.loadone.saferealtor.model.dto.RegisterAgentReqDTO;
 import com.loadone.saferealtor.model.dto.RegisterUserReqDTO;
 import com.loadone.saferealtor.model.entity.Agent;
+import com.loadone.saferealtor.model.entity.Role;
 import com.loadone.saferealtor.model.entity.User;
 import com.loadone.saferealtor.repository.AgentRepository;
 import com.loadone.saferealtor.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,11 +31,11 @@ public class AgentService {
             throw new BaseException(ErrorCode.DUPLICATED_PHONE_NUMBER);
         }
 
-        User user = authService.register(RegisterUserReqDTO.builder()
+        User user = authService.registerUser(RegisterUserReqDTO.builder()
                 .userId(request.getUserId())
                 .password(request.getPassword())
                 .phoneNumber(request.getPhoneNumber())
-                .build(), User.ROLE_AGENT);
+                .build(), Role.AGENT);
 
         Agent agent = new Agent();
         agent.setUser(user);

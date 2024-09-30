@@ -3,13 +3,16 @@ package com.loadone.saferealtor.controller;
 import com.loadone.saferealtor.exception.BaseException;
 import com.loadone.saferealtor.exception.ErrorCode;
 import com.loadone.saferealtor.model.dto.*;
+import com.loadone.saferealtor.model.entity.Role;
 import com.loadone.saferealtor.model.entity.User;
 import com.loadone.saferealtor.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Log4j2
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -59,7 +62,7 @@ public class AuthController {
 
     /* 회원가입 */
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody RegisterUserReqDTO request) {
+    public ResponseEntity<RegisterUserResDTO> register(@RequestBody RegisterUserReqDTO request) {
 
         // 이미 가입된 번호인지 확인
         if (authService.isPhoneNumberRegistered(request.getPhoneNumber())) {
@@ -67,8 +70,11 @@ public class AuthController {
         }
 
         try {
-            User user = authService.register(request, User.ROLE_USER);
-            return ResponseEntity.status(HttpStatus.CREATED).body(user);
+            User user = authService.registerUser(request, Role.USER);
+
+            RegisterUserResDTO registerUserResDTO = new RegisterUserResDTO(user);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(registerUserResDTO);
         } catch (BaseException be) {
             throw be;
         } catch (Exception e) {
@@ -83,9 +89,11 @@ public class AuthController {
             LoginResDTO loginResDTO = authService.login(request.getUserId(), request.getPassword());
             return ResponseEntity.ok(loginResDTO);
         } catch (BaseException be) {
-            throw new BaseException(be.getErrorCode(), "아이디 혹은 비밀번호를 다시 확인해 주세요.");
+            log.error(request+ " "+ be.getMessage());
+            throw new BaseException(ErrorCode.INVALID_ID_PASSWORD);
         } catch (Exception e) {
-            throw new BaseException(ErrorCode.FAILED_TO_LOGIN,e);
+            log.error(request+ " "+ e.getMessage());
+            throw new BaseException(ErrorCode.FAILED_TO_LOGIN);
         }
     }
 }
