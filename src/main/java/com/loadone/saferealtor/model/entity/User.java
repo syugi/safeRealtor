@@ -38,6 +38,9 @@ public class User {
     @Column(nullable = false)
     private Role role; //구분 (ROLE_ADMIN: 관리자, ROLE_AGENT: 중개사, ROLE_USER: 사용자)
 
+    @Column
+    private String refreshToken;
+
     @OneToMany(mappedBy = "user")
     private Set<Inquiry> inquiries;
 

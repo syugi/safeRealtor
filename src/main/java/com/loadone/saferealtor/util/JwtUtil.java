@@ -29,8 +29,11 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secretStr;
 
-    @Value("${jwt.expiration_time}")
+    @Value("${jwt.access-token-exp-time}")
     private int accessTokenExpTime;
+
+    @Value("${jwt.refresh-token-exp-time}")
+    private int refreshTokenExpTime;
 
     private SecretKey secretKey;
 
@@ -54,26 +57,35 @@ public class JwtUtil {
     }
 
     /**
+     * Refresh Token 생성
+     * @param userInfo
+     * @return Refresh Token String
+     */
+    public String createRefreshToken(UserInfoDTO userInfo) {
+        return createToken(userInfo, refreshTokenExpTime);
+    }
+
+    /**
      * JWT 생성
      * @param userInfo
-     * @param min
+     * @param expirationMinutes
      * @return JWT String
      */
-    private String createToken(UserInfoDTO userInfo, int min) {
-        
+    private String createToken(UserInfoDTO userInfo, int expirationMinutes) {
+
         Map<String, Object> claimsMap = new HashMap<>();
         claimsMap.put("userId", userInfo.getUserId());
         claimsMap.put("role", userInfo.getRoleName());
 
         Instant now = Instant.now();
-        Instant tokenValidity = now.plus(Duration.ofMinutes(min));
+        Instant expiration = now.plus(Duration.ofMinutes(expirationMinutes));
 
         return Jwts.builder()
                 .header().type("JWT")
                 .and()
                 .subject(userInfo.getUserId())
                 .claims(claimsMap)
-                .expiration(Date.from(tokenValidity))
+                .expiration(Date.from(expiration))
                 .signWith(secretKey)
                 .compact();
     }
@@ -84,6 +96,7 @@ public class JwtUtil {
      * @return
      */
     public boolean validateToken(String token) {
+
         try {
             Claims claims = extractAllClaims(token);  // 토큰에서 클레임 추출
             return !isTokenExpired(claims);
@@ -93,7 +106,6 @@ public class JwtUtil {
             throw new BaseException(ErrorCode.INVALID_TOKEN);  // 기타 JWT 관련 문제
         }
     }
-
 
     /**
      * JWT에서 username 추출

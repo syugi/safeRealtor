@@ -96,4 +96,17 @@ public class AuthController {
             throw new BaseException(ErrorCode.FAILED_TO_LOGIN);
         }
     }
+
+    /* 액세스 토큰 갱신 */
+    @PostMapping("/refreshToken")
+    public ResponseEntity<TokenResDTO> refreshAccessToken(@RequestBody TokenReqDTO request) {
+        try {
+            String newAccessToken = authService.refreshAccessToken(request.getRefreshToken());
+            return ResponseEntity.ok(new TokenResDTO(newAccessToken));
+        } catch (BaseException be) {
+            throw be;
+        } catch (Exception e) {
+            throw new BaseException(ErrorCode.FAILED_TO_REFRESH_TOKEN, e);
+        }
+    }
 }

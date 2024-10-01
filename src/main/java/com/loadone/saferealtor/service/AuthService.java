@@ -141,12 +141,17 @@ public class AuthService {
                     .roleName(user.getRoleName())
                     .build();
 
-            String jwtToken = jwtUtil.createAccessToken(userInfo);
+            String accessToken = jwtUtil.createAccessToken(userInfo);
+            String refreshToken = jwtUtil.createRefreshToken(userInfo);
+
+            user.setRefreshToken(refreshToken);
+            userRepository.save(user);
 
             return LoginResDTO.builder()
                     .userId(user.getUserId())
                     .role(user.getRoleName())
-                    .jwtToken(jwtToken)
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
                     .build();
 
         } catch (BadCredentialsException e) {
@@ -158,5 +163,28 @@ public class AuthService {
             log.error("Failed to login: {}", e.getMessage());
             throw new BaseException(ErrorCode.FAILED_TO_LOGIN, e);
         }
+    }
+
+    public String refreshAccessToken(String refreshToken){
+
+        // 리프레시 토큰 검증
+        if (!jwtUtil.validateToken(refreshToken)) {
+            throw new BaseException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        String userId = jwtUtil.extractUserId(refreshToken);
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+
+        // 저장된 리프레시 토큰과 요청된 리프레시 토큰이 일치하는지 확인
+        if (!user.getRefreshToken().equals(refreshToken)) {
+            throw new BaseException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        // 새로운 액세스 토큰 생성
+        UserInfoDTO userInfo = UserInfoDTO.builder()
+                .userId(user.getUserId())
+                .roleName(user.getRoleName())
+                .build();
+        return jwtUtil.createAccessToken(userInfo);
     }
 }
