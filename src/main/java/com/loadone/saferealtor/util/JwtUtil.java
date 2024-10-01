@@ -3,7 +3,6 @@ package com.loadone.saferealtor.util;
 import com.loadone.saferealtor.exception.BaseException;
 import com.loadone.saferealtor.exception.ErrorCode;
 import com.loadone.saferealtor.model.dto.UserInfoDTO;
-import com.loadone.saferealtor.model.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -64,7 +63,7 @@ public class JwtUtil {
         
         Map<String, Object> claimsMap = new HashMap<>();
         claimsMap.put("userId", userInfo.getUserId());
-        claimsMap.put("role", userInfo.getRole());
+        claimsMap.put("role", userInfo.getRoleName());
 
         Instant now = Instant.now();
         Instant tokenValidity = now.plus(Duration.ofMinutes(min));
@@ -108,8 +107,8 @@ public class JwtUtil {
     // JWT에서 권한(roles) 추출
     public SimpleGrantedAuthority extractRole(String token) {
         Claims claims = extractAllClaims(token);
-        int role = claims.get("role", Integer.class);  // JWT 클레임에서 roles 추출
-        return new SimpleGrantedAuthority(Role.getName(role));
+        String role = claims.get("role", String.class);  // JWT 클레임에서 roles 추출
+        return new SimpleGrantedAuthority(role);
     }
 
 

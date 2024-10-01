@@ -34,8 +34,9 @@ public class User {
     @Column(nullable = false, unique = true)
     private String phoneNumber;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private int role; //구분 (0:관리자, 1:공인중개사, 2:사용자)
+    private Role role; //구분 (ROLE_ADMIN: 관리자, ROLE_AGENT: 중개사, ROLE_USER: 사용자)
 
     @OneToMany(mappedBy = "user")
     private Set<Inquiry> inquiries;
@@ -46,7 +47,7 @@ public class User {
     @LastModifiedDate
     private LocalDateTime updatedAt;  // 최근 정보 수정일
 
-    public String getRoleName() {
-        return Role.getName(role);
+    public String getRoleName(){
+        return this.role.name();
     }
 }

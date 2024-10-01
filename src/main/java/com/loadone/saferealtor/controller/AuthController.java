@@ -70,7 +70,7 @@ public class AuthController {
         }
 
         try {
-            User user = authService.registerUser(request, Role.USER);
+            User user = authService.registerUser(request, Role.ROLE_USER);
 
             RegisterUserResDTO registerUserResDTO = new RegisterUserResDTO(user);
 

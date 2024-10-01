@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -17,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private JwtFilter jwtFilter;
@@ -47,6 +49,7 @@ public class SecurityConfig {
 //                        .requestMatchers("/agent/**").hasRole(Role.AGENT.name())  // AGENT 역할만 접근 가능
 //                        .requestMatchers("/user/**").hasRole("USER")    // USER 역할만 접근 가능
 //                        .requestMatchers("/api/auth/**").permitAll()
+//                                .requestMatchers("/api/properties/register").hasRole("AGENT")
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .anyRequest().authenticated()

@@ -9,6 +9,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class LoginResDTO {
     private String userId;
-    private int role;
+    private String role;
     private String jwtToken;
 }

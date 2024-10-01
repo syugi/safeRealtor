@@ -1,5 +1,6 @@
 package com.loadone.saferealtor.repository;
 
+import com.loadone.saferealtor.model.entity.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,7 +28,7 @@ public class UserRepositoryTest {
             user.setUserId("user" + i);
             user.setPassword(passwordEncoder.encode("1234"));
             user.setPhoneNumber("010-1234-567"+i);
-            user.setRole(User.ROLE_USER);
+            user.setRole(Role.ROLE_USER);
 
             userRepository.save(user);
 

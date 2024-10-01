@@ -86,8 +86,8 @@ public class AuthService {
     // 사용자 아이디 유효성 체크
     public void validateUserId(String userId) {
 
-        // 아이디는 5~20자의 영문자와 숫자로 구성, 특수문자 제외
-        String userIdPattern = "^(?=.*[a-zA-Z])[a-zA-Z0-9]{5,20}$";
+        // 아이디는 4~20자의 영문자와 숫자로 구성, 특수문자 제외
+        String userIdPattern = "^(?=.*[a-zA-Z])[a-zA-Z0-9]{4,20}$";
         if (!Pattern.matches(userIdPattern, userId)) {
             throw new BaseException(ErrorCode.INVALID_USER_ID_FORMAT);
         }
@@ -99,7 +99,7 @@ public class AuthService {
 
     // 비밀번호 검증 메서드
     public void validatePassword(String password) {
-//        // 비밀번호는 최소 8~20자, 숫자, 대문자, 소문자, 특수문자 포함
+//        // 비밀번호는 최소 4~20자, 숫자, 대문자, 소문자, 특수문자 포함
 //        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,20}$";
         String passwordPattern = "^[A-Za-z\\d@$!%*?&]{4,20}$";
         if (!Pattern.matches(passwordPattern, password)) {
@@ -122,7 +122,7 @@ public class AuthService {
         user.setUserId(request.getUserId());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setPhoneNumber(request.getPhoneNumber());
-        user.setRole(role.getValue());
+        user.setRole(role);
         return userRepository.save(user);
     }
 
@@ -138,14 +138,14 @@ public class AuthService {
 
             UserInfoDTO userInfo = UserInfoDTO.builder()
                     .userId(user.getUserId())
-                    .role(user.getRole())
+                    .roleName(user.getRoleName())
                     .build();
 
             String jwtToken = jwtUtil.createAccessToken(userInfo);
 
             return LoginResDTO.builder()
                     .userId(user.getUserId())
-                    .role(user.getRole())
+                    .role(user.getRoleName())
                     .jwtToken(jwtToken)
                     .build();
 

@@ -17,6 +17,7 @@ public enum ErrorCode {
     FAILED_TO_SEND_VERIFICATION_CODE("인증번호 발송에 실패하였습니다."),
     FAILED_TO_REGISTER_USER("사용자 등록에 실패하였습니다."),
     FAILED_TO_LOGIN("로그인에 실패하였습니다."),
+    ACCESS_DENIED("접근 권한이 없습니다.", HttpStatus.FORBIDDEN),
 
     //토큰
     MISSING_TOKEN("토큰을 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED),

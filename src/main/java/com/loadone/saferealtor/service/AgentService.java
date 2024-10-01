@@ -35,7 +35,7 @@ public class AgentService {
                 .userId(request.getUserId())
                 .password(request.getPassword())
                 .phoneNumber(request.getPhoneNumber())
-                .build(), Role.AGENT);
+                .build(), Role.ROLE_AGENT);
 
         Agent agent = new Agent();
         agent.setUser(user);

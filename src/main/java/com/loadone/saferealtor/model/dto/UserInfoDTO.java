@@ -7,5 +7,5 @@ import lombok.Data;
 @Data
 public class UserInfoDTO {
     private String userId;
-    private int role;
+    private String roleName;
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class InquiryController {
     private final InquiryService inquiryService;
 
+    // 문의 등록
     @PostMapping("/submit")
     public ResponseEntity<Inquiry> submitInquiry(@RequestBody InquiryReqDTO request) {
         Inquiry inquiry = inquiryService.saveInquiry(request);

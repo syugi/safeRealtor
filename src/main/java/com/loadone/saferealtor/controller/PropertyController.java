@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +29,7 @@ public class PropertyController {
     private final FavoriteService favoriteService;
 
     // 매물 등록
+    @PreAuthorize("hasRole('ROLE_AGENT')")
     @PostMapping(value = "/register", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<Property> registerProperty(@RequestPart("property") PropertyDTO propertyDTO,
                                                      @RequestPart(value = "images", required = false) List<MultipartFile> images) {
@@ -48,9 +50,11 @@ public class PropertyController {
         return ResponseEntity.ok().body(property);
     }
 
+    // 매물 목록 조회 (중개사용)
+    @PreAuthorize("hasRole('ROLE_AGENT')")
     @GetMapping("/realtor-list")
     public ResponseEntity<List<PropertyDTO>> getPropertiesForRealtor(@RequestParam int page, @RequestParam int perPage) {
-        // 공인중개사는 userId 필요 없음
+        // 중개사는 userId 필요 없음
         PageReqDTO pageReqDTO = PageReqDTO.builder().page(page).perPage(perPage).build();
         Pageable pageable = pageReqDTO.getPageable();
 
@@ -82,6 +86,7 @@ public class PropertyController {
     }
 
     // 매물 수정
+    @PreAuthorize("hasRole('ROLE_AGENT')")
     @PutMapping("/update/{id}")
     public ResponseEntity<Property> updateProperty(@PathVariable Long id, @RequestBody Property updatedProperty) {
         try {
@@ -95,6 +100,7 @@ public class PropertyController {
     }
 
     // 매물 삭제
+    @PreAuthorize("hasRole('ROLE_AGENT')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProperty(@PathVariable Long id) {
         propertyService.deleteProperty(id);
