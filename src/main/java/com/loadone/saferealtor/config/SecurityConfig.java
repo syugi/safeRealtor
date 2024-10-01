@@ -46,11 +46,8 @@ public class SecurityConfig {
                 .logout(config -> config.disable()) // 로그아웃 비활성화
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-//                        .requestMatchers("/agent/**").hasRole(Role.AGENT.name())  // AGENT 역할만 접근 가능
-//                        .requestMatchers("/user/**").hasRole("USER")    // USER 역할만 접근 가능
-//                        .requestMatchers("/api/auth/**").permitAll()
-//                                .requestMatchers("/api/properties/register").hasRole("AGENT")
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/properties/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .anyRequest().authenticated()
                 );

@@ -34,7 +34,9 @@ public class JwtFilter extends OncePerRequestFilter {
             "/api/auth/sendVerificationCode",
             "/api/auth/verifyCode",
             "/api/auth/checkUserId",
-            "/api/auth/refreshToken"
+            "/api/auth/refreshToken",
+            "/api/properties",
+            "/uploads"
     );
 
     @Override

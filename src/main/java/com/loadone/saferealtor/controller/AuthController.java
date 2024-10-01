@@ -101,7 +101,7 @@ public class AuthController {
     @PostMapping("/refreshToken")
     public ResponseEntity<TokenResDTO> refreshAccessToken(@RequestBody TokenReqDTO request) {
         try {
-            String newAccessToken = authService.refreshAccessToken(request.getRefreshToken());
+            String newAccessToken = authService.refreshAccessToken(request.getUserId(), request.getRefreshToken());
             return ResponseEntity.ok(new TokenResDTO(newAccessToken));
         } catch (BaseException be) {
             throw be;

@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 public class TokenReqDTO {
-    private String accessToken;
+    private String userId;
     private String refreshToken;
 }

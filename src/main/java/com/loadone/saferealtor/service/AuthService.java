@@ -165,7 +165,7 @@ public class AuthService {
         }
     }
 
-    public String refreshAccessToken(String refreshToken){
+    public String refreshAccessToken(String clientId, String refreshToken) {
 
         // 리프레시 토큰 검증
         if (!jwtUtil.validateToken(refreshToken)) {
@@ -173,6 +173,12 @@ public class AuthService {
         }
 
         String userId = jwtUtil.extractUserId(refreshToken);
+
+        // 요청한 사용자 아이디와 리프레시 토큰에 포함된 사용자 아이디가 일치하는지 확인
+        if(!clientId.equals(userId)){
+            throw new BaseException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
         // 저장된 리프레시 토큰과 요청된 리프레시 토큰이 일치하는지 확인
