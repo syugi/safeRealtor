@@ -1,8 +1,11 @@
 package com.loadone.saferealtor.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loadone.saferealtor.exception.BaseException;
 import com.loadone.saferealtor.exception.ErrorCode;
+import com.loadone.saferealtor.exception.ErrorResponse;
 import com.loadone.saferealtor.util.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +17,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -77,17 +81,39 @@ public class JwtFilter extends OncePerRequestFilter {
                 // 인증 정보 SecurityContext에 설정
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
-        } catch (BaseException be) {
-            log.error("JWT Filter Error: {}", be.getErrorCode().getMessage());
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, be.getMessage());
+        } catch (BaseException e) {
+            log.error("JWT Filter Error: {}", e.getErrorCode().getMessage());
+            handleException(response, e);
+            return;
+        } catch (ExpiredJwtException e) {
+            log.error("JWT Filter Error:  Token expired");
+            handleException(response, new BaseException(ErrorCode.EXPIRED_TOKEN));
             return;
         } catch (Exception e) {
             log.error("JWT Filter Error: {}", e.getMessage());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            handleException(response, new BaseException(ErrorCode.INVALID_TOKEN));
             return;
         }
 
         // 다음 필터 실행
         chain.doFilter(request, response);
+    }
+
+    private void handleException(HttpServletResponse response, BaseException be) throws IOException {
+        log.error("JWT Filter Error: {} - {}", be.getErrorCode().name(), be.getMessage());
+
+        response.setStatus(be.getHttpStatus().value());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        // JSON 응답 생성 및 전송
+        ErrorResponse errorResponse = new ErrorResponse(be.getErrorCode().name(), be.getMessage());
+
+        // ObjectMapper를 사용하여 객체를 JSON으로 직렬화
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(errorResponse);
+
+        response.getWriter().write(jsonResponse);
+        response.getWriter().flush();
     }
 }

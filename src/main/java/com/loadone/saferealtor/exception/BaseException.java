@@ -11,19 +11,19 @@ public class BaseException extends RuntimeException {
     public BaseException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
-        this.httpStatus = HttpStatus.BAD_REQUEST;
+        this.httpStatus = errorCode.getHttpStatus();
     }
 
     public BaseException(ErrorCode errorCode, String customMessage) {
         super(customMessage);
         this.errorCode = errorCode;
-        this.httpStatus = HttpStatus.BAD_REQUEST;
+        this.httpStatus = errorCode.getHttpStatus();
     }
 
     public BaseException(ErrorCode errorCode, Exception e) {
         super(errorCode.getMessage() + ": " + e.getMessage());
         this.errorCode = errorCode;
-        this.httpStatus = HttpStatus.BAD_REQUEST;
+        this.httpStatus = errorCode.getHttpStatus();
     }
 
     @Override

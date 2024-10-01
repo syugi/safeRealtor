@@ -5,6 +5,8 @@ import com.loadone.saferealtor.exception.ErrorCode;
 import com.loadone.saferealtor.model.dto.UserInfoDTO;
 import com.loadone.saferealtor.model.entity.Role;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -83,8 +85,16 @@ public class JwtUtil {
      * @return
      */
     public boolean validateToken(String token) {
-        return !isTokenExpired(token);
+        try {
+            Claims claims = extractAllClaims(token);  // 토큰에서 클레임 추출
+            return !isTokenExpired(claims);
+        } catch (ExpiredJwtException e) {
+            throw new BaseException(ErrorCode.EXPIRED_TOKEN);  // 토큰 만료
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new BaseException(ErrorCode.INVALID_TOKEN);  // 기타 JWT 관련 문제
+        }
     }
+
 
     /**
      * JWT에서 username 추출
@@ -104,8 +114,8 @@ public class JwtUtil {
 
 
     // 토큰 만료 여부 확인
-    private boolean isTokenExpired(String token) {
-        return extractAllClaims(token).getExpiration().before(new Date());
+    private boolean isTokenExpired(Claims claims) {
+        return claims.getExpiration().before(new Date());
     }
 
     // 모든 클레임 추출

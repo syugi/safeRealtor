@@ -151,9 +151,11 @@ public class AuthService {
 
         } catch (BadCredentialsException e) {
             // 비밀번호 불일치 등의 인증 실패 처리
+            log.error("Failed to login: {}", e.getMessage());
             throw new BaseException(ErrorCode.INVALID_ID_PASSWORD);
         } catch (Exception e) {
             // 기타 예외 처리
+            log.error("Failed to login: {}", e.getMessage());
             throw new BaseException(ErrorCode.FAILED_TO_LOGIN, e);
         }
     }

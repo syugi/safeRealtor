@@ -22,6 +22,7 @@ public enum ErrorCode {
     MISSING_TOKEN("토큰을 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED),
     INVALID_TOKEN("유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED),
     JWT_SECRET_KEY_GENERATION_FAILED("JWT 비밀키 생성에 실패하였습니다."),
+    EXPIRED_TOKEN("토큰이 만료되었습니다.", HttpStatus.UNAUTHORIZED),
 
     //사용자
     INVALID_USER_ID("사용 불가능한 아이디 입니다."),
@@ -66,5 +67,8 @@ public enum ErrorCode {
 
     public String getMessage() {
         return message;
+    }
+    public HttpStatus getHttpStatus() {
+        return httpStatus;
     }
 }
