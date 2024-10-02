@@ -34,3 +34,8 @@ coolsms:
 
 agent:
   phone-number:
+
+jwt:
+  access-token-exp-time:  15  # Access Token 만료 시간 (분 단위)
+  refresh-token-exp-time: 43200  # Refresh Token 만료 시간 (30일)
+  secret:
