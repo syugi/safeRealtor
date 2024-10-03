@@ -19,20 +19,20 @@ public class UserRepositoryTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Test
-    public void TestInsert(){
-
-        for(int i=1; i<=10; i++){
-
-            User user = new User();
-            user.setUserId("user" + i);
-            user.setPassword(passwordEncoder.encode("1234"));
-            user.setPhoneNumber("010-1234-567"+i);
-            user.setRole(Role.ROLE_USER);
-
-            userRepository.save(user);
-
-        }
-    }
+//    @Test
+//    public void TestInsert(){
+//
+//        for(int i=1; i<=10; i++){
+//
+//            User user = new User();
+//            user.setUserId("user" + i);
+//            user.setPassword(passwordEncoder.encode("1234"));
+//            user.setPhoneNumber("010-1234-567"+i);
+//            user.setRole(Role.ROLE_USER);
+//
+//            userRepository.save(user);
+//
+//        }
+//    }
 
 }
