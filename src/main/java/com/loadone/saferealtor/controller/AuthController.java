@@ -20,22 +20,6 @@ public class AuthController {
 
     private final AuthService authService;
 
-    /* 관리자 회원가입 */
-    @PostMapping("/admin/register")
-    public ResponseEntity<RegisterUserResDTO> adminRegister(@RequestBody RegisterUserReqDTO request) {
-        try {
-            User user = authService.registerUser(request, Role.ROLE_ADMIN);
-
-            RegisterUserResDTO registerUserResDTO = new RegisterUserResDTO(user);
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(registerUserResDTO);
-        } catch (BaseException be) {
-            throw be;
-        } catch (Exception e) {
-            throw new BaseException(ErrorCode.REGISTRATION_FAILED, e);
-        }
-    }
-
     /* 인증번호 발송 */
     @PostMapping("/sendVerificationCode")
     public ResponseEntity<String> sendVerificationCode(@RequestBody PhoneNumberReqDTO request) {
