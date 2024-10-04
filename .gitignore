@@ -204,3 +204,5 @@ gradle-app.setting
 
 
 uploads/images/**
+
+src/main/resources/application.yml
