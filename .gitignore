@@ -203,8 +203,12 @@ gradle-app.setting
 
 
 
+<<<<<<< HEAD
 uploads/images/**
 
 src/main/resources/application.yml
 
+=======
+uploads/images/**src/main/resources/application.yml
+>>>>>>> a4089c7 (Ignore .gradle directory)
 .gradle/
