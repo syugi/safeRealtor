@@ -38,9 +38,9 @@ public class AdminAccountInitializer implements CommandLineRunner {
             admin.setRole(Role.ROLE_ADMIN); // 관리자 권한 부여
             admin.setPhoneNumber(adminPhoneNumber);
             userRepository.save(admin);
-            log.info("Admin account created. :: "+adminUser);
+            log.info("## Admin account created. :: "+adminUser);
         } else {
-            log.info("Admin account already exists. :: "+adminUser);
+            log.info("## Admin account already exists. :: "+adminUser);
         }
     }
 }
