@@ -3,9 +3,9 @@ spring:
     name: safeRealtor
 
   datasource:
-    url: jdbc:mysql://localhost:3306/saferealtor
-    username:
-    password:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
@@ -22,25 +22,25 @@ spring:
       max-request-size: 1GB
 
 file:
-  upload-path:
+  upload-path: uploads/images
 
 sms:
   enable: false
 
 coolsms:
-  api-key:
-  api-secret:
-  from-number:
+  api-key: ${COOLSMS_API_KEY}
+  api-secret: ${COOLSMS_API_SECRET}
+  from-number: ${COOLSMS_FROM_NUMBER}
 
 agent:
-  phone-number:
+  phone-number: ${AGENT_PHONE_NUMBER}
 
 jwt:
   access-token-exp-time:  15  # Access Token 만료 시간 (분 단위)
   refresh-token-exp-time: 43200  # Refresh Token 만료 시간 (30일)
-  secret:
+  secret: ${JWT_SECRET}
 
 admin:
-  userid:
-  password:
-  phone-number:
+  userid: ${ADMIN_USERID}
+  password: ${ADMIN_PASSWORD}
+  phone-number: ${ADMIN_PHONE_NUMBER}

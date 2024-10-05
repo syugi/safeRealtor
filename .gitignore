@@ -201,7 +201,6 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
-
+.env
 uploads/images/**
-src/main/resources/application.yml
 .gradle/
