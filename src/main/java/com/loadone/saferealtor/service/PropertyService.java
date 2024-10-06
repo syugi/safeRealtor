@@ -3,12 +3,14 @@ package com.loadone.saferealtor.service;
 import com.loadone.saferealtor.exception.BaseException;
 import com.loadone.saferealtor.exception.ErrorCode;
 import com.loadone.saferealtor.model.dto.PropertyDTO;
+import com.loadone.saferealtor.model.dto.PropertyResDTO;
 import com.loadone.saferealtor.model.entity.Agent;
 import com.loadone.saferealtor.model.entity.Property;
 import com.loadone.saferealtor.repository.AgentRepository;
 import com.loadone.saferealtor.repository.PropertyRepository;
 import com.loadone.saferealtor.util.FileUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class PropertyService {
@@ -27,7 +30,10 @@ public class PropertyService {
 
     private final FileUtil fileUtil;
 
-    public Property registerProperty(PropertyDTO propertyDTO, List<MultipartFile> images) throws IOException {
+    public PropertyResDTO registerProperty(PropertyDTO propertyDTO, List<MultipartFile> images) throws IOException {
+        boolean imageUploadSuccess = true;
+        String message = "매물 등록에 성공했습니다.";
+
         String newPropertyNumber = generateNextPropertyNumber();
         Agent agent = agentRepository.findById(propertyDTO.getAgentId())
                 .orElseThrow(() -> new BaseException(ErrorCode.AGENT_NOT_FOUND));
@@ -37,14 +43,28 @@ public class PropertyService {
         property.setAgent(agent);
         property.setPropertyNumber(newPropertyNumber);
 
-        // 이미지 처리 (이미지 경로 저장)
+        // 이미지 처리 (S3에 이미지 업로드 후 URL 저장)
         if (images != null && !images.isEmpty()) {
-            List<String> imagePaths = fileUtil.uploadImages(images);
-            property.setImageUrls(imagePaths); // 이미지 URL 리스트 설정
+            try {
+                List<String> imagePaths = fileUtil.uploadImages(images);
+                property.setImageUrls(imagePaths); // 이미지 URL 리스트 설정
+            } catch (Exception e){
+                log.error("Failed to upload images: {}", e.getMessage(), e);
+                imageUploadSuccess = false;
+                if (e.getCause() instanceof BaseException) {
+                    message = e.getCause().getMessage();
+                } else {
+                    message = ErrorCode.FILE_UPLOAD_ERROR.getMessage();
+                }
+            }
         }
 
         // 매물 정보 저장
-        return propertyRepository.save(property);
+        propertyRepository.save(property);
+
+        PropertyDTO resPropertyDTO = new PropertyDTO(property);
+
+        return new PropertyResDTO(resPropertyDTO, imageUploadSuccess, message);
     }
 
     // 매물 번호 생성 로직

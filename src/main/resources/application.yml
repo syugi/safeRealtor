@@ -18,11 +18,9 @@ spring:
 
   servlet:
     multipart:
-      max-file-size: 1GB
-      max-request-size: 1GB
-
-file:
-  upload-path: uploads/images
+      max-file-size: 10MB
+      max-request-size: 50MB
+      enabled: true
 
 sms:
   enable: false
@@ -44,3 +42,15 @@ admin:
   userid: ${ADMIN_USERID}
   password: ${ADMIN_PASSWORD}
   phone-number: ${ADMIN_PHONE_NUMBER}
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    s3:
+      bucket: ${AWS_BUCKET_NAME}
