@@ -4,6 +4,7 @@ import com.loadone.saferealtor.exception.BaseException;
 import com.loadone.saferealtor.exception.ErrorCode;
 import com.loadone.saferealtor.model.dto.PageReqDTO;
 import com.loadone.saferealtor.model.dto.PropertyDTO;
+import com.loadone.saferealtor.model.dto.PropertyResDTO;
 import com.loadone.saferealtor.model.entity.Favorite;
 import com.loadone.saferealtor.model.entity.Property;
 import com.loadone.saferealtor.service.FavoriteService;
@@ -29,13 +30,13 @@ public class PropertyController {
     private final FavoriteService favoriteService;
 
     // 매물 등록
-    @PreAuthorize("hasRole('ROLE_AGENT')")
+//    @PreAuthorize("hasRole('ROLE_AGENT')")
     @PostMapping(value = "/register", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<Property> registerProperty(@RequestPart("property") PropertyDTO propertyDTO,
-                                                     @RequestPart(value = "images", required = false) List<MultipartFile> images) {
+    public ResponseEntity<PropertyResDTO> registerProperty(@RequestPart("property") PropertyDTO propertyDTO,
+                                                           @RequestPart(value = "images", required = false) List<MultipartFile> images) {
         try {
-            Property property = propertyService.registerProperty(propertyDTO, images);
-            return ResponseEntity.status(HttpStatus.CREATED).body(property);
+            PropertyResDTO propertyResDTO = propertyService.registerProperty(propertyDTO, images);
+            return ResponseEntity.status(HttpStatus.CREATED).body(propertyResDTO);
         } catch (BaseException be) {
             throw be;
         } catch (Exception e) {
@@ -67,20 +68,34 @@ public class PropertyController {
 
     // 매물 목록 조회
     @GetMapping
-    public ResponseEntity<List<PropertyDTO>> getProperties(@RequestParam String userId, @RequestParam int page, @RequestParam int perPage) {
+    public ResponseEntity<List<PropertyDTO>> getProperties(@RequestParam(required = false) String userId,
+                                                           @RequestParam int page,
+                                                           @RequestParam int perPage) {
         PageReqDTO pageReqDTO = PageReqDTO.builder().page(page).perPage(perPage).build();
         Pageable pageable = pageReqDTO.getPageable();
 
+        // 매물 목록 가져오기
         Page<Property> propertyPage = propertyService.getProperties(pageable);
-        List<Favorite> favorites = favoriteService.getFavoritesByUserId(userId);
 
-        List<PropertyDTO> propertyResDTOS = propertyPage.stream()
-                .map(property -> {
-                    boolean isFavorite = favorites.stream()
-                            .anyMatch(favorite -> favorite.getPropertyId().equals(property.getId()));
-                    return new PropertyDTO(property, isFavorite);
-                })
-                .toList();
+        List<PropertyDTO> propertyResDTOS;
+
+        // userId가 비어있을 경우 favorites 체크 없이 목록 반환
+        if (userId == null || userId.isEmpty()) {
+            propertyResDTOS = propertyPage.stream()
+                    .map(property -> new PropertyDTO(property, false)) // false로 기본 설정
+                    .toList();
+        } else {
+            // userId가 있는 경우 favorites 체크 후 반환
+            List<Favorite> favorites = favoriteService.getFavoritesByUserId(userId);
+
+            propertyResDTOS = propertyPage.stream()
+                    .map(property -> {
+                        boolean isFavorite = favorites.stream()
+                                .anyMatch(favorite -> favorite.getPropertyId().equals(property.getId()));
+                        return new PropertyDTO(property, isFavorite);
+                    })
+                    .toList();
+        }
 
         return ResponseEntity.ok().body(propertyResDTOS);
     }
