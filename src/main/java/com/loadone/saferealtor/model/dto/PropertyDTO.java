@@ -43,9 +43,9 @@ public class PropertyDTO {
     private List<String> imageUrls;  // 이미지 URL 리스트
     private Boolean isFavorite;  // 찜 여부
     private LocalDateTime createdAt;  // 등록일시
+    private String thumbnailUrl;  // 썸네일 URL
 
-
-    private Long agentId;  // 중개인 ID
+    private String registeredUserId; // 매물 등록 유저 ID
 
     public PropertyDTO(Property property) {
         this.id = property.getId();
@@ -76,6 +76,13 @@ public class PropertyDTO {
         this.imageUrls = property.getImageUrls();
         this.isFavorite = false; // 찜 여부
         this.createdAt = property.getCreatedAt();
+
+        // 이미지 리스트에서 첫 번째 이미지를 썸네일로 설정
+        if (property.getImageUrls() != null && !property.getImageUrls().isEmpty()) {
+            this.thumbnailUrl = property.getImageUrls().get(0);
+        } else {
+            this.thumbnailUrl = null; // 이미지가 없는 경우 null로 설정
+        }
     }
 
     public PropertyDTO(Property property, boolean isFavorite) {

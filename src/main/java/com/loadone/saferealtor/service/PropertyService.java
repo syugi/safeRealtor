@@ -6,8 +6,10 @@ import com.loadone.saferealtor.model.dto.PropertyDTO;
 import com.loadone.saferealtor.model.dto.PropertyResDTO;
 import com.loadone.saferealtor.model.entity.Agent;
 import com.loadone.saferealtor.model.entity.Property;
+import com.loadone.saferealtor.model.entity.User;
 import com.loadone.saferealtor.repository.AgentRepository;
 import com.loadone.saferealtor.repository.PropertyRepository;
+import com.loadone.saferealtor.repository.UserRepository;
 import com.loadone.saferealtor.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -27,6 +29,7 @@ public class PropertyService {
 
     private final PropertyRepository propertyRepository;
     private final AgentRepository agentRepository;
+    private final UserRepository userRepository;
 
     private final FileUtil fileUtil;
 
@@ -35,8 +38,14 @@ public class PropertyService {
         String message = "매물 등록에 성공했습니다.";
 
         String newPropertyNumber = generateNextPropertyNumber();
-        Agent agent = agentRepository.findById(propertyDTO.getAgentId())
-                .orElseThrow(() -> new BaseException(ErrorCode.AGENT_NOT_FOUND));
+
+        String userId = propertyDTO.getRegisteredUserId();
+
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
+
+        Agent agent = agentRepository.findByUserId(user.getId())  // User로 Agent 조회
+                .orElseThrow(() -> new BaseException(ErrorCode.AGENT_NOT_FOUND, "해당 유저는 중개사가 아닙니다."));
 
         // DTO에서 Property 객체로 변환
         Property property = propertyDTO.toEntity();

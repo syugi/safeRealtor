@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -85,6 +86,7 @@ public class Property {
     @LastModifiedDate
     private LocalDateTime updatedAt;  // 매물 수정일
 
+    @Lazy
     @ElementCollection // 값 타입 컬렉션 선언
     @CollectionTable(name = "property_images", joinColumns = @JoinColumn(name = "property_id")) // 매핑될 테이블 설정
     @Column(name = "image_url") // 이미지 URL 컬럼

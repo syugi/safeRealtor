@@ -3,6 +3,7 @@ package com.loadone.saferealtor.controller;
 import com.loadone.saferealtor.exception.BaseException;
 import com.loadone.saferealtor.exception.ErrorCode;
 import com.loadone.saferealtor.model.dto.PageReqDTO;
+import com.loadone.saferealtor.model.dto.PagedResponseDTO;
 import com.loadone.saferealtor.model.dto.PropertyDTO;
 import com.loadone.saferealtor.model.dto.PropertyResDTO;
 import com.loadone.saferealtor.model.entity.Favorite;
@@ -51,19 +52,28 @@ public class PropertyController {
         return ResponseEntity.ok().body(property);
     }
 
-    // 매물 목록 조회 (중개사용)
-    @PreAuthorize("hasRole('ROLE_AGENT')")
-    @GetMapping("/realtor-list")
-    public ResponseEntity<List<PropertyDTO>> getPropertiesForRealtor(@RequestParam int page, @RequestParam int perPage) {
-        // 중개사는 userId 필요 없음
+    // 매물 조회 (중개사 용)
+    @GetMapping("/realtor")
+    public ResponseEntity<PagedResponseDTO<PropertyDTO>> getPropertiesForRealtor(
+            @RequestParam int page, @RequestParam int perPage) {
+
         PageReqDTO pageReqDTO = PageReqDTO.builder().page(page).perPage(perPage).build();
         Pageable pageable = pageReqDTO.getPageable();
 
         Page<Property> propertyPage = propertyService.getProperties(pageable);
+
         List<PropertyDTO> propertyResponseList = propertyPage.stream()
-                .map(PropertyDTO::new) // 찜 여부 없이 매물 정보만 리턴
+                .map(PropertyDTO::new)
                 .toList();
-        return ResponseEntity.ok(propertyResponseList);
+
+        PagedResponseDTO<PropertyDTO> response = new PagedResponseDTO<>(
+                propertyResponseList,
+                propertyPage.getTotalPages(),
+                propertyPage.getNumber(),
+                propertyPage.getTotalElements()
+        );
+
+        return ResponseEntity.ok(response);
     }
 
     // 매물 목록 조회

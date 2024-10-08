@@ -9,22 +9,21 @@ import org.springframework.http.HttpStatus;
 public class BaseException extends RuntimeException {
     private final ErrorCode errorCode;
     private final HttpStatus httpStatus;
-    static final String ERROR = "[ERROR]";
 
     public BaseException(ErrorCode errorCode) {
-        super(ERROR+errorCode.getMessage());
+        super(errorCode.getMessage());
         this.errorCode = errorCode;
         this.httpStatus = errorCode.getHttpStatus();
     }
 
     public BaseException(ErrorCode errorCode, String customMessage) {
-        super(ERROR+customMessage);
+        super(customMessage);
         this.errorCode = errorCode;
         this.httpStatus = errorCode.getHttpStatus();
     }
 
     public BaseException(ErrorCode errorCode, Exception e) {
-        super(ERROR+errorCode.getMessage());
+        super(errorCode.getMessage());
         log.error("BaseException occurred: {} {}, HTTP Status: {}", errorCode, errorCode.getMessage(), errorCode.getHttpStatus(), e);
         this.errorCode = errorCode;
         this.httpStatus = errorCode.getHttpStatus();

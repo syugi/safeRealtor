@@ -79,7 +79,14 @@ public class InquiryService {
                 .collect(Collectors.joining(", "))
                 : "매물 선택 없음";
 
+
+
         return String.format("[안부] 새로운 문의가 도착했습니다.\n\n#고객 핸드폰 번호: %s \n\n#매물 번호: %s\n\n#문의 내용: %s\n\n#상세 요청사항: %s",
                 customerPhoneNumber, propertyNumbers,inquiryContent, detailRequest );
+    }
+
+    // 문의 목록 조회
+    public List<Inquiry> getInquiryList() {
+        return inquiryRepository.findAll();
     }
 }

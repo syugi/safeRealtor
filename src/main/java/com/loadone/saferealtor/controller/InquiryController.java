@@ -5,10 +5,9 @@ import com.loadone.saferealtor.model.entity.Inquiry;
 import com.loadone.saferealtor.service.InquiryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/inquiry")
@@ -22,4 +21,12 @@ public class InquiryController {
         Inquiry inquiry = inquiryService.saveInquiry(request);
         return ResponseEntity.ok(inquiry);
     }
+
+    // 문의 목록 조회
+    @GetMapping("/list")
+    public ResponseEntity<List<Inquiry  >> getInquiryList() {
+        List<Inquiry> inquiries = inquiryService.getInquiryList();
+        return ResponseEntity.ok(inquiries);
+    }
+
 }
