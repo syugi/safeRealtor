@@ -53,4 +53,5 @@ public class User {
     public String getRoleName(){
         return this.role.name();
     }
+    public String getRoleDisplayName() { return this.role.getDisplayName();}
 }

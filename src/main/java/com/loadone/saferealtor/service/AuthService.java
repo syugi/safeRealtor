@@ -150,6 +150,7 @@ public class AuthService {
             return LoginResDTO.builder()
                     .userId(user.getUserId())
                     .role(user.getRoleName())
+                    .roleDisplayName(user.getRoleDisplayName())
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .build();
