@@ -105,10 +105,11 @@ public class PropertyService {
     }
 
     @Transactional
-    public Property updateProperty(Long id, Property updatedProperty) {
+    public PropertyDTO updateProperty(Long id, PropertyDTO updatedProperty, List<MultipartFile> newImages, List<String> imagesToDelete) {
         return propertyRepository.findById(id)
                 .map(existingProperty -> {
-                    existingProperty.setPropertyNumber(updatedProperty.getPropertyNumber());
+                    // 기존 속성 업데이트
+                    existingProperty.setTitle(updatedProperty.getTitle());
                     existingProperty.setPrice(updatedProperty.getPrice());
                     existingProperty.setDescription(updatedProperty.getDescription());
                     existingProperty.setType(updatedProperty.getType());
@@ -131,12 +132,45 @@ public class PropertyService {
                     existingProperty.setOptions(updatedProperty.getOptions());
                     existingProperty.setSecurityFacilities(updatedProperty.getSecurityFacilities());
                     existingProperty.setAddress(updatedProperty.getAddress());
+
+                    // 삭제할 이미지 처리
+                    if (imagesToDelete != null && !imagesToDelete.isEmpty()) {
+                        for (String imageUrl : imagesToDelete) {
+                            // fileUtil을 사용해 이미지 삭제
+                            fileUtil.deleteImage(imageUrl);
+                            // 기존 매물에서 이미지 제거
+                            existingProperty.getImageUrls().remove(imageUrl);
+                        }
+                    }
+
+                    // 새로 업로드된 이미지 처리
+                    if (newImages != null && !newImages.isEmpty()) {
+                        // fileUtil을 사용해 이미지 업로드
+                        List<String> imagePaths = fileUtil.uploadImages(newImages);
+                        // 업로드된 이미지 URL들을 매물의 이미지 목록에 추가
+                        existingProperty.getImageUrls().addAll(imagePaths);
+                    }
+
                     return propertyRepository.save(existingProperty);
                 })
+                .map(PropertyDTO::new)
                 .orElseThrow(() -> new BaseException(ErrorCode.PROPERTY_NOT_FOUND));
     }
 
+
+    // 매물 삭제
+    @Transactional
     public void deleteProperty(Long id) {
-        propertyRepository.deleteById(id);
+        Property property = propertyRepository.findById(id).orElseThrow(() -> new BaseException(ErrorCode.PROPERTY_NOT_FOUND));
+
+        // 이미지 삭제
+        if(property.getImageUrls() != null && !property.getImageUrls().isEmpty()) {
+            for(String imageUrl : property.getImageUrls()) {
+                fileUtil.deleteImage(imageUrl);
+            }
+        }
+
+        // 매물 삭제
+        propertyRepository.delete(property);
     }
 }

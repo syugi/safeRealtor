@@ -78,8 +78,20 @@ public class FileUtil {
 
             return amazonS3.getUrl(bucketName, filename).toString();
         } catch (IOException e) {
-            log.error("Error uploading image to S3: {}", e.getMessage(), e);
+            log.error("S3 이미지 등록 실패: {}", e.getMessage(), e);
             throw new BaseException(ErrorCode.FILE_UPLOAD_ERROR);
+        }
+    }
+
+    public void deleteImage(String imageUrl) {
+        try {
+            String[] urlParts = imageUrl.split("/");
+            String filename = urlParts[urlParts.length - 1];
+            amazonS3.deleteObject(bucketName, filename);
+            log.info("S3에서 이미지 삭제: {}", filename);
+        } catch (Exception e) {
+            log.error("S3 이미지 삭제 실패: {}", e.getMessage(), e);
+            throw new BaseException(ErrorCode.FILE_DELETE_ERROR);
         }
     }
 }

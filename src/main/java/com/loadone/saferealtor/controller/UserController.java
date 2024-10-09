@@ -40,7 +40,7 @@ public class UserController {
     }
 
     // 중개사 목록 조회
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_AGENT')")
     @GetMapping("/agents")
     public ResponseEntity<List<UserDTO>> getAgentList() {
         List<UserDTO> agents = userService.getUsersByRole(Role.ROLE_AGENT);
@@ -48,7 +48,7 @@ public class UserController {
     }
 
     // 일반 회원 목록 조회
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_AGENT')")
     @GetMapping("/members")
     public ResponseEntity<List<UserDTO>> getMemberList() {
         List<UserDTO> members = userService.getUsersByRole(Role.ROLE_USER);

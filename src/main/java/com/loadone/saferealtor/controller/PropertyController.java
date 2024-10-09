@@ -31,7 +31,7 @@ public class PropertyController {
     private final FavoriteService favoriteService;
 
     // 매물 등록
-//    @PreAuthorize("hasRole('ROLE_AGENT')")
+    @PreAuthorize("hasRole('ROLE_AGENT')")
     @PostMapping(value = "/register", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<PropertyResDTO> registerProperty(@RequestPart("property") PropertyDTO propertyDTO,
                                                            @RequestPart(value = "images", required = false) List<MultipartFile> images) {
@@ -47,9 +47,9 @@ public class PropertyController {
 
     // 매물 단건 조회
     @GetMapping("/{id}")
-    public ResponseEntity<Property> getProperty(@PathVariable Long id) {
+    public ResponseEntity<PropertyDTO> getProperty(@PathVariable Long id) {
         Property property = propertyService.getPropertyById(id);
-        return ResponseEntity.ok().body(property);
+        return ResponseEntity.ok(new PropertyDTO(property));
     }
 
     // 매물 조회 (중개사 용)
@@ -112,17 +112,22 @@ public class PropertyController {
 
     // 매물 수정
     @PreAuthorize("hasRole('ROLE_AGENT')")
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Property> updateProperty(@PathVariable Long id, @RequestBody Property updatedProperty) {
+    @PutMapping(value ="/{id}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<PropertyDTO> updateProperty(
+            @PathVariable Long id,
+            @RequestPart("property") PropertyDTO propertyDTO,
+            @RequestPart(value = "images", required = false) List<MultipartFile> newImages,
+            @RequestPart(value = "imagesToDelete", required = false) List<String> imagesToDelete) {
         try {
-            Property property = propertyService.updateProperty(id, updatedProperty);
-            return ResponseEntity.ok().body(property);
+            PropertyDTO updatedProperty = propertyService.updateProperty(id, propertyDTO, newImages, imagesToDelete);
+            return ResponseEntity.ok().body(updatedProperty);
         } catch (BaseException be) {
             throw be;
         } catch (Exception e) {
             throw new BaseException(ErrorCode.FAILED_TO_UPDATE_PROPERTY, e);
         }
     }
+
 
     // 매물 삭제
     @PreAuthorize("hasRole('ROLE_AGENT')")

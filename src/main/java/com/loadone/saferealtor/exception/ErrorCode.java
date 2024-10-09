@@ -52,6 +52,7 @@ public enum ErrorCode {
     INVALID_FILE_TYPE("지원하지 않는 파일 형식입니다."),
     FILE_UPLOAD_ERROR("파일 업로드에 실패하였습니다."),
     ASYNC_OPERATION_ERROR("비동기 작업에 실패하였습니다."),
+    FILE_DELETE_ERROR("파일 삭제에 실패하였습니다."),
 
     //SMS
     FAILED_TO_SEND_SMS("SMS 발송에 실패하였습니다."),
