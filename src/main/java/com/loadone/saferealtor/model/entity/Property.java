@@ -92,10 +92,12 @@ public class Property {
     @Column(name = "image_url") // 이미지 URL 컬럼
     private List<String> imageUrls;  // 이미지 URL 리스트
 
+    @Lazy
     @ManyToOne
     @JoinColumn(name = "agent_id", nullable = false)
     private Agent agent;
 
+    @Lazy
     @ManyToMany(mappedBy = "properties")
     @JsonBackReference // 직렬화 시 역방향 참조를 방지
     private Set<Inquiry> inquiries;  // 문의 리스트

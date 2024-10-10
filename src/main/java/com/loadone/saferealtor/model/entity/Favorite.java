@@ -22,6 +22,10 @@ public class Favorite {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "property_id", nullable = false, insertable = false, updatable = false)
+    private Property property;  // Property와 연관 관계 설정
+
     @Column(name = "property_id", nullable = false)
     private Long propertyId;
 

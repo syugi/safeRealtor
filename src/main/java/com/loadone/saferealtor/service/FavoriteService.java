@@ -1,9 +1,10 @@
 package com.loadone.saferealtor.service;
 
+import com.loadone.saferealtor.model.dto.PagingResultDTO;
+import com.loadone.saferealtor.model.dto.PropertyDTO;
 import com.loadone.saferealtor.model.entity.Favorite;
 import com.loadone.saferealtor.model.entity.Property;
 import com.loadone.saferealtor.repository.FavoriteRepository;
-import com.loadone.saferealtor.repository.PropertyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +17,6 @@ import java.util.List;
 public class FavoriteService {
 
     private final FavoriteRepository favoriteRepository;
-    private final PropertyRepository propertyRepository;
 
     public void addFavorite(String userId, Long propertyId) {
         if(favoriteRepository.findByUserIdAndPropertyId(userId, propertyId).isEmpty()){
@@ -29,17 +29,23 @@ public class FavoriteService {
                 .ifPresent(favoriteRepository::delete);
     }
 
-    public Page<Property> getFavoriteProperties(String userId, Pageable pageable) {
-        // 페이징된 Favorite 목록 가져오기
+    public PagingResultDTO<PropertyDTO> getFavoriteProperties(String userId, Pageable pageable) {
+
         Page<Favorite> favoritePage = favoriteRepository.findByUserId(userId, pageable);
 
-        // Favorite에서 Property ID 목록 추출
-        List<Long> propertyIds = favoritePage.getContent().stream()
-                .map(Favorite::getPropertyId)
+        // Favorite에서 Property 추출
+        List<PropertyDTO> propertyResponseList = favoritePage.stream()
+                .map(favorite -> {
+                    Property property = favorite.getProperty();
+                    return new PropertyDTO(property, true);
+                })
                 .toList();
 
-        // 페이징된 Property 목록 가져오기
-        return propertyRepository.findAllByIdIn(propertyIds, pageable);
+        return new PagingResultDTO<>(propertyResponseList,
+                favoritePage.getTotalPages(),
+                favoritePage.getNumber(),
+                favoritePage.getTotalElements()
+                );
     }
 
     public List<Favorite> getFavoritesByUserId(String userId) {
