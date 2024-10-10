@@ -3,7 +3,7 @@ package com.loadone.saferealtor.controller;
 import com.loadone.saferealtor.exception.BaseException;
 import com.loadone.saferealtor.exception.ErrorCode;
 import com.loadone.saferealtor.model.dto.PageReqDTO;
-import com.loadone.saferealtor.model.dto.PagedResponseDTO;
+import com.loadone.saferealtor.model.dto.PagingResultDTO;
 import com.loadone.saferealtor.model.dto.PropertyDTO;
 import com.loadone.saferealtor.model.dto.PropertyResDTO;
 import com.loadone.saferealtor.model.entity.Favorite;
@@ -52,10 +52,11 @@ public class PropertyController {
         return ResponseEntity.ok(new PropertyDTO(property));
     }
 
-    // 매물 조회 (중개사 용)
-    @GetMapping("/realtor")
-    public ResponseEntity<PagedResponseDTO<PropertyDTO>> getPropertiesForRealtor(
-            @RequestParam int page, @RequestParam int perPage) {
+    // 매물 조회
+    @GetMapping("/list")
+    public ResponseEntity<PagingResultDTO<PropertyDTO>> getPropertiesForRealtor(@RequestParam(required = false) String userId,
+                                                                               @RequestParam int page,
+                                                                               @RequestParam int perPage) {
 
         PageReqDTO pageReqDTO = PageReqDTO.builder().page(page).perPage(perPage).build();
         Pageable pageable = pageReqDTO.getPageable();
@@ -66,7 +67,17 @@ public class PropertyController {
                 .map(PropertyDTO::new)
                 .toList();
 
-        PagedResponseDTO<PropertyDTO> response = new PagedResponseDTO<>(
+        // userId가 있을 경우 즐겨찾기 여부 추가
+        if(userId != null && !userId.isEmpty()){
+            List<Favorite> favorites = favoriteService.getFavoritesByUserId(userId);
+            propertyResponseList.forEach(propertyDTO -> {
+                boolean isFavorite = favorites.stream()
+                        .anyMatch(favorite -> favorite.getPropertyId().equals(propertyDTO.getId()));
+                propertyDTO.setIsFavorite(isFavorite);
+            });
+        }
+
+        PagingResultDTO<PropertyDTO> response = new PagingResultDTO<>(
                 propertyResponseList,
                 propertyPage.getTotalPages(),
                 propertyPage.getNumber(),
@@ -74,40 +85,6 @@ public class PropertyController {
         );
 
         return ResponseEntity.ok(response);
-    }
-
-    // 매물 목록 조회
-    @GetMapping
-    public ResponseEntity<List<PropertyDTO>> getProperties(@RequestParam(required = false) String userId,
-                                                           @RequestParam int page,
-                                                           @RequestParam int perPage) {
-        PageReqDTO pageReqDTO = PageReqDTO.builder().page(page).perPage(perPage).build();
-        Pageable pageable = pageReqDTO.getPageable();
-
-        // 매물 목록 가져오기
-        Page<Property> propertyPage = propertyService.getProperties(pageable);
-
-        List<PropertyDTO> propertyResDTOS;
-
-        // userId가 비어있을 경우 favorites 체크 없이 목록 반환
-        if (userId == null || userId.isEmpty()) {
-            propertyResDTOS = propertyPage.stream()
-                    .map(property -> new PropertyDTO(property, false)) // false로 기본 설정
-                    .toList();
-        } else {
-            // userId가 있는 경우 favorites 체크 후 반환
-            List<Favorite> favorites = favoriteService.getFavoritesByUserId(userId);
-
-            propertyResDTOS = propertyPage.stream()
-                    .map(property -> {
-                        boolean isFavorite = favorites.stream()
-                                .anyMatch(favorite -> favorite.getPropertyId().equals(property.getId()));
-                        return new PropertyDTO(property, isFavorite);
-                    })
-                    .toList();
-        }
-
-        return ResponseEntity.ok().body(propertyResDTOS);
     }
 
     // 매물 수정

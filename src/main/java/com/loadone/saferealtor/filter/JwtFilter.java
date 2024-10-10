@@ -35,6 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
             "/api/auth/verifyCode",
             "/api/auth/checkUserId",
             "/api/auth/refreshToken",
+            "/api/properties/list",
             "/uploads"
     );
 
@@ -42,13 +43,6 @@ public class JwtFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         // 로그인, 회원가입, 인증번호 요청 API는 필터링하지 않음
         String path = request.getServletPath();
-        String method = request.getMethod();
-
-        // 특정 URL은 GET 요청일 때만 필터링하지 않음 (매물 조회는 허용, 수정/삭제는 권한 체크)
-        if ("/api/properties".equals(path) && "GET".equalsIgnoreCase(method)) {
-            return true;
-        }
-
         return EXCLUDE_URLS.stream().anyMatch(path::startsWith);
     }
 

@@ -4,7 +4,6 @@ import com.loadone.saferealtor.model.entity.Favorite;
 import com.loadone.saferealtor.model.entity.Property;
 import com.loadone.saferealtor.repository.FavoriteRepository;
 import com.loadone.saferealtor.repository.PropertyRepository;
-import com.loadone.saferealtor.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +17,6 @@ public class FavoriteService {
 
     private final FavoriteRepository favoriteRepository;
     private final PropertyRepository propertyRepository;
-    private final UserRepository userRepository;
 
     public void addFavorite(String userId, Long propertyId) {
         if(favoriteRepository.findByUserIdAndPropertyId(userId, propertyId).isEmpty()){
