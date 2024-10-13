@@ -11,6 +11,7 @@ public class LoginResDTO {
     private String userId;
     private String role;
     private String roleDisplayName;
+    private String phoneNumber;
     private String accessToken;
     private String refreshToken;
 }

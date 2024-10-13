@@ -151,6 +151,7 @@ public class AuthService {
                     .userId(user.getUserId())
                     .role(user.getRoleName())
                     .roleDisplayName(user.getRoleDisplayName())
+                    .phoneNumber(user.getPhoneNumber())
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .build();
