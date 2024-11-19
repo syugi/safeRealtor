@@ -48,7 +48,7 @@ public class PropertyDTO {
     private String registeredUserId; // 매물 등록 유저 ID
 
     public PropertyDTO(Property property) {
-        this.id = property.getId();
+        this.id = property.getPropertySeq();
         this.propertyNumber = property.getPropertyNumber();
         this.price = property.getPrice();
         this.title = property.getTitle();

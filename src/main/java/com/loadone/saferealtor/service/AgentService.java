@@ -33,23 +33,21 @@ public class AgentService {
 
         User user = authService.registerUser(RegisterUserReqDTO.builder()
                 .userId(request.getUserId())
+                .name(request.getName())
                 .password(request.getPassword())
                 .phoneNumber(request.getPhoneNumber())
+                .email(request.getEmail())
                 .build(), Role.ROLE_AGENT);
 
         Agent agent = new Agent();
         agent.setUser(user);
-        agent.setEmail(request.getEmail());
         agent.setLicenseNumber(request.getLicenseNumber());
-        agent.setName(request.getName());
         return agentRepository.save(agent);
     }
 
     public Agent updateAgent(Agent agent) {
-        Agent existingAgent = agentRepository.findById(agent.getId()).orElseThrow();
-        existingAgent.setName(agent.getName());
+        Agent existingAgent = agentRepository.findById(agent.getAgentSeq()).orElseThrow();
         existingAgent.setLicenseNumber(agent.getLicenseNumber());
-        existingAgent.setEmail(agent.getEmail());
         return agentRepository.save(existingAgent);
     }
 }

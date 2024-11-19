@@ -7,7 +7,9 @@ import lombok.Data;
 @Builder
 public class RegisterUserReqDTO {
     private String userId;
+    private String name;
     private String password;
     private String phoneNumber;
+    private String email;
     private int role;
 }

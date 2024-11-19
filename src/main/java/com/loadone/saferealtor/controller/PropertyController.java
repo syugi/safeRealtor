@@ -72,7 +72,7 @@ public class PropertyController {
             List<Favorite> favorites = favoriteService.getFavoritesByUserId(userId);
             propertyResponseList.forEach(propertyDTO -> {
                 boolean isFavorite = favorites.stream()
-                        .anyMatch(favorite -> favorite.getPropertyId().equals(propertyDTO.getId()));
+                        .anyMatch(favorite -> favorite.getPropertySeq().equals(propertyDTO.getId()));
                 propertyDTO.setIsFavorite(isFavorite);
             });
         }

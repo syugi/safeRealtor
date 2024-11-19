@@ -17,17 +17,17 @@ public class Favorite {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long favoriteSeq;
 
     @Column(name = "user_id", nullable = false)
     private String userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "property_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "property_seq", nullable = false, insertable = false, updatable = false)
     private Property property;  // Property와 연관 관계 설정
 
-    @Column(name = "property_id", nullable = false)
-    private Long propertyId;
+    @Column(name = "property_seq", nullable = false)
+    private Long propertySeq;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -35,8 +35,8 @@ public class Favorite {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public Favorite(String userId, Long propertyId) {
+    public Favorite(String userId, Long propertySeq) {
         this.userId = userId;
-        this.propertyId = propertyId;
+        this.propertySeq = propertySeq;
     }
 }

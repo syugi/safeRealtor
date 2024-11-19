@@ -14,8 +14,6 @@ public interface PropertyRepository extends JpaRepository<Property, Long> {
     // propertyNumber로 매물 조회
     List<Property> findByPropertyNumberIn(List<String> propertyNumbers);
 
-    Page<Property> findAllByIdIn(List<Long> propertyIds, Pageable pageable);
-
     @EntityGraph(attributePaths = {"agent", "imageUrls"})
     Page<Property> findAll (Pageable pageable);
 }

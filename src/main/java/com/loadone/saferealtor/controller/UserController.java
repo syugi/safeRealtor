@@ -26,8 +26,8 @@ public class UserController {
 
     /* 사용자 정보 수정 */
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User user) {
-        user.setId(id);
+    public User updateUser(@PathVariable Long userSeq, @RequestBody User user) {
+        user.setUserSeq(userSeq);
         return userService.updateUser(user);
     }
 

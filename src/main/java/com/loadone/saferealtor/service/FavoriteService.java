@@ -18,14 +18,14 @@ public class FavoriteService {
 
     private final FavoriteRepository favoriteRepository;
 
-    public void addFavorite(String userId, Long propertyId) {
-        if(favoriteRepository.findByUserIdAndPropertyId(userId, propertyId).isEmpty()){
-            favoriteRepository.save(new Favorite(userId, propertyId));
+    public void addFavorite(String userId, Long propertySeq) {
+        if(favoriteRepository.findByUserIdAndPropertySeq(userId, propertySeq).isEmpty()){
+            favoriteRepository.save(new Favorite(userId, propertySeq));
         }
     }
 
     public void removeFavorite(String userId, Long propertyId) {
-        favoriteRepository.findByUserIdAndPropertyId(userId, propertyId)
+        favoriteRepository.findByUserIdAndPropertySeq(userId, propertyId)
                 .ifPresent(favoriteRepository::delete);
     }
 

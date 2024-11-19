@@ -44,7 +44,7 @@ public class PropertyService {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND));
 
-        Agent agent = agentRepository.findByUserId(user.getId())  // User로 Agent 조회
+        Agent agent = agentRepository.findByUser_UserSeq(user.getUserSeq())  // User로 Agent 조회
                 .orElseThrow(() -> new BaseException(ErrorCode.AGENT_NOT_FOUND, "해당 유저는 중개사가 아닙니다."));
 
         // DTO에서 Property 객체로 변환

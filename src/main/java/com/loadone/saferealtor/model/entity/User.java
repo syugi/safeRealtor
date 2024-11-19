@@ -22,21 +22,30 @@ import java.util.Set;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO_INCREMENT 사용
+    private Long userSeq;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 50) // 아이디는 유니크하고 필수
     private String userId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String password;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 20)
     private String phoneNumber;
+
+    @Column
+    private String name;
+
+    @Column(length = 100)
+    private String email;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role; //구분 (ROLE_ADMIN: 관리자, ROLE_AGENT: 중개사, ROLE_USER: 사용자)
+
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = true; // 활성 상태 (기본값 true)
 
     @Column
     private String refreshToken;

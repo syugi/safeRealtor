@@ -28,7 +28,7 @@ public class UserService {
 
     // 사용자 정보 수정
     public User updateUser(User user) {
-        User existingUser = userRepository.findById(user.getId()).orElseThrow();
+        User existingUser = userRepository.findById(user.getUserSeq()).orElseThrow();
         existingUser.setPhoneNumber(user.getPhoneNumber());
         existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(existingUser);

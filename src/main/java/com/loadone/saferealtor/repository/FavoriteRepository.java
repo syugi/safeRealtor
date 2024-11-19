@@ -15,5 +15,5 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     @EntityGraph(attributePaths = {"property.imageUrls"})
     Page<Favorite> findByUserId(String userId, Pageable pageable);
 
-    Optional<Favorite> findByUserIdAndPropertyId(String userId, Long propertyId);
+    Optional<Favorite> findByUserIdAndPropertySeq(String userId, Long propertySeq);
 }

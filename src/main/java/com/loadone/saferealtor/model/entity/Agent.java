@@ -21,17 +21,19 @@ public class Agent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
-    private String name;
+    private Long agentSeq;
 
     private String licenseNumber;
 
-    private String email;
+    @Column(name = "agency_name", length = 100)
+    private String agencyName; // 소속 사무소 이름
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "approval_status", nullable = false)
+    private ApprovalStatus approvalStatus = ApprovalStatus.PENDING; // 승인 상태
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_seq")
     @JsonBackReference // 직렬화 시 역방향 참조를 방지
     private User user;
 
@@ -43,4 +45,10 @@ public class Agent {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    public enum ApprovalStatus {
+        PENDING,  // 승인 대기 중
+        APPROVED, // 승인됨
+        REJECTED  // 승인 거부됨
+    }
 }

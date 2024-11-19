@@ -19,10 +19,10 @@ public class Inquiry {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long inquirySeq; // 문의 ID
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_seq")
     private User user; // 문의한 유저 ID
 
     @Lob
@@ -40,8 +40,8 @@ public class Inquiry {
     @ManyToMany
     @JoinTable(
             name = "inquiry_property",
-            joinColumns = @JoinColumn(name = "inquiry_id"),
-            inverseJoinColumns = @JoinColumn(name = "property_id")
+            joinColumns = @JoinColumn(name = "inquiry_seq"),
+            inverseJoinColumns = @JoinColumn(name = "property_seq")
     )
 
     @JsonManagedReference // 직렬화 시 이 참조가 포함됨

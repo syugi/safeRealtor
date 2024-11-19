@@ -120,7 +120,9 @@ public class AuthService {
 
         User user = new User();
         user.setUserId(request.getUserId());
+        user.setName(request.getName());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setEmail(request.getEmail());
         user.setPhoneNumber(request.getPhoneNumber());
         user.setRole(role);
         return userRepository.save(user);

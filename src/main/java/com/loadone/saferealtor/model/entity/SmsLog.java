@@ -16,7 +16,7 @@ public class SmsLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long smsLogSeq;     // SMS 발송 로그 ID
 
     private String phoneNumber;   // 발송된 전화번호
     private String message;       // 발송된 메시지 내용

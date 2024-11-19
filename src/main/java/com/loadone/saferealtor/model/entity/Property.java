@@ -26,7 +26,7 @@ import java.util.Set;
 public class Property {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long propertySeq; // 매물 ID
 
     @Column(nullable = false, unique = true)
     private String propertyNumber; // 매물 번호 (고유 식별자)
@@ -88,13 +88,13 @@ public class Property {
 
     @Lazy
     @ElementCollection // 값 타입 컬렉션 선언
-    @CollectionTable(name = "property_images", joinColumns = @JoinColumn(name = "property_id")) // 매핑될 테이블 설정
+    @CollectionTable(name = "property_images", joinColumns = @JoinColumn(name = "property_seq")) // 매핑될 테이블 설정
     @Column(name = "image_url") // 이미지 URL 컬럼
     private List<String> imageUrls;  // 이미지 URL 리스트
 
     @Lazy
     @ManyToOne
-    @JoinColumn(name = "agent_id", nullable = false)
+    @JoinColumn(name = "agent_seq", nullable = false)
     private Agent agent;
 
     @Lazy

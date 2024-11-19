@@ -8,25 +8,21 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class RegisterAgentResDTO {
-    private Long agentId;
+    private Long agentSeq;
     private String name;
     private String licenseNumber;
     private String email;
-    private Long id;
+    private Long userSeq;
     private String userId;
     private String phoneNumber;
     private String role;
 
-
-
     public RegisterAgentResDTO(Agent agent){
-        this.agentId = agent.getId();
-        this.name = agent.getName();
+        this.agentSeq = agent.getAgentSeq();
         this.licenseNumber = agent.getLicenseNumber();
-        this.email = agent.getEmail();
 
         User user = agent.getUser();
-        this.id = user.getId();
+        this.userSeq = user.getUserSeq();
         this.userId = user.getUserId();
         this.phoneNumber = user.getPhoneNumber();
         this.role = user.getRoleName();

@@ -60,7 +60,7 @@ public class InquiryService {
             smsService.sendSms(agentPhoneNumber, message); // 문자 발송
         } catch (Exception e) {
             // 문자 발송 실패 시 로그 출력, 예외 처리 (문의는 이미 저장됨)
-            log.error("Failed to send SMS for inquiry {}: {}", savedInquiry.getId(), e.getMessage());
+            log.error("Failed to send SMS for inquiry {}: {}", savedInquiry.getInquirySeq(), e.getMessage());
         }
 
         return savedInquiry;

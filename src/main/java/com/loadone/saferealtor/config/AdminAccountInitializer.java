@@ -33,7 +33,8 @@ public class AdminAccountInitializer implements CommandLineRunner {
         // Admin 계정이 없으면 새로 추가
         if (userRepository.findByUserId(adminUser).isEmpty()) {
             User admin = new User();
-            admin.setUserId("admin");
+            admin.setUserId(adminUser);
+            admin.setName("관리자");
             admin.setPassword(passwordEncoder.encode(adminPassword));  // 기본 패스워드 설정
             admin.setRole(Role.ROLE_ADMIN); // 관리자 권한 부여
             admin.setPhoneNumber(adminPhoneNumber);

@@ -15,7 +15,7 @@ public class VerificationCode {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long verificationCodeSeq;
     private String phoneNumber;
     private String code;
     private LocalDateTime requestedAt; // 요청 시간
