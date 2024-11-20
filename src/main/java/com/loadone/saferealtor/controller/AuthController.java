@@ -31,7 +31,10 @@ public class AuthController {
         }
 
         try {
-            authService.sendVerificationCode(phoneNumber);
+            boolean result = authService.sendVerificationCode(phoneNumber);
+            if (!result) {
+                throw new BaseException(ErrorCode.FAILED_TO_SEND_VERIFICATION_CODE);
+            }
             return ResponseEntity.ok("인증번호가 발송 되었습니다.");
         } catch (BaseException be) {
             throw be;
@@ -43,7 +46,10 @@ public class AuthController {
     /* 인증번호 확인 */
     @PostMapping("/verifyCode")
     public ResponseEntity<String> verifyCode(@RequestBody VerificationReqDTO request) {
-        authService.verifyCode(request.getPhoneNumber(), request.getCode());
+        boolean result = authService.verifyCode(request.getPhoneNumber(), request.getCode());
+        if (!result) {
+            throw new BaseException(ErrorCode.INVALID_VERIFICATION_CODE);
+        }
         return ResponseEntity.ok("인증번호가 확인 되었습니다.");
     }
 
