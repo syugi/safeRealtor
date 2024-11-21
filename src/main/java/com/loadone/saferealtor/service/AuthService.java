@@ -2,13 +2,8 @@ package com.loadone.saferealtor.service;
 
 import com.loadone.saferealtor.exception.BaseException;
 import com.loadone.saferealtor.exception.ErrorCode;
-import com.loadone.saferealtor.model.dto.LoginResDTO;
-import com.loadone.saferealtor.model.dto.RegisterUserReqDTO;
-import com.loadone.saferealtor.model.dto.UserInfoDTO;
-import com.loadone.saferealtor.model.entity.CustomUserDetails;
-import com.loadone.saferealtor.model.entity.Role;
-import com.loadone.saferealtor.model.entity.User;
-import com.loadone.saferealtor.model.entity.VerificationCode;
+import com.loadone.saferealtor.model.dto.*;
+import com.loadone.saferealtor.model.entity.*;
 import com.loadone.saferealtor.repository.UserRepository;
 import com.loadone.saferealtor.repository.VerificationCodeRepository;
 import com.loadone.saferealtor.util.JwtUtil;
@@ -20,9 +15,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.regex.Pattern;
+import java.util.UUID;
 
 @Log4j2
 @Service
@@ -35,6 +37,17 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final RestTemplate restTemplate = new RestTemplate();
+    private final String KAKAO_PREFIX = "kakao_";
+
+    @Value("${kakao.client-id}")
+    private String kakaoClientId;
+
+    @Value("${kakao.client-secret}")
+    private String kakaoClientSecret;
+
+    @Value("${kakao.redirect-uri}")
+    private String kakaoRedirectUri;
 
     public boolean isPhoneNumberRegistered(String phoneNumber) {
         return userRepository.existsByPhoneNumber(phoneNumber);
@@ -64,13 +77,15 @@ public class AuthService {
 
     // 인증번호 생성
     private String generateVerificationCode() {
-        return String.valueOf((int)(Math.random() * 900000) + 100000);
+        return String.valueOf((int) (Math.random() * 900000) + 100000);
     }
 
     // 인증번호 확인
     public boolean verifyCode(String phoneNumber, String code) {
         final int MAX_MINUTES = 3;
-        VerificationCode verificationCode = verificationCodeRepository.findTopByPhoneNumberOrderByRequestedAtDesc(phoneNumber).orElseThrow(() -> new BaseException(ErrorCode.INVALID_VERIFICATION_CODE, "인증번호가 존재하지 않습니다."));
+        VerificationCode verificationCode = verificationCodeRepository
+                .findTopByPhoneNumberOrderByRequestedAtDesc(phoneNumber)
+                .orElseThrow(() -> new BaseException(ErrorCode.INVALID_VERIFICATION_CODE, "인증번호가 존재하지 않습니다."));
 
         if (!verificationCode.getCode().equals(code)) {
             throw new BaseException(ErrorCode.INVALID_VERIFICATION_CODE);
@@ -92,15 +107,16 @@ public class AuthService {
             throw new BaseException(ErrorCode.INVALID_USER_ID_FORMAT);
         }
 
-        if(userRepository.existsByUserId(userId)){
+        if (userRepository.existsByUserId(userId)) {
             throw new BaseException(ErrorCode.DUPLICATED_USER_ID);
         }
     }
 
     // 비밀번호 검증 메서드
     public void validatePassword(String password) {
-//        // 비밀번호는 최소 4~20자, 숫자, 대문자, 소문자, 특수문자 포함
-//        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,20}$";
+        // // 비밀번호는 최소 4~20자, 숫자, 대문자, 소문자, 특수문자 포함
+        // String passwordPattern =
+        // "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,20}$";
         String passwordPattern = "^[A-Za-z\\d@$!%*?&]{4,20}$";
         if (!Pattern.matches(passwordPattern, password)) {
             throw new BaseException(ErrorCode.INVALID_PASSWORD_FORMAT);
@@ -118,21 +134,25 @@ public class AuthService {
             throw e;
         }
 
-        User user = new User();
-        user.setUserId(request.getUserId());
-        user.setName(request.getName());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setEmail(request.getEmail());
-        user.setPhoneNumber(request.getPhoneNumber());
-        user.setRole(role);
+        User user = User.builder()
+                .userId(request.getUserId())
+                .name(request.getName())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .phoneNumber(request.getPhoneNumber())
+                .email(request.getEmail())
+                .signupType(SignupType.EMAIL)
+                .role(Role.ROLE_USER)
+                .build();
+
         return userRepository.save(user);
     }
 
-    public LoginResDTO login(String userId, String password){
+    public LoginResDTO login(String userId, String password) {
 
         try {
             // 아이디, 비밀번호로 인증
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userId, password));
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(userId, password));
 
             // 인증 정보에서 사용자 정보를 가져옴
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -179,7 +199,7 @@ public class AuthService {
         String userId = jwtUtil.extractUserId(refreshToken);
 
         // 요청한 사용자 아이디와 리프레시 토큰에 포함된 사용자 아이디가 일치하는지 확인
-        if(!clientId.equals(userId)){
+        if (!clientId.equals(userId)) {
             throw new BaseException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
@@ -196,5 +216,106 @@ public class AuthService {
                 .roleName(user.getRoleName())
                 .build();
         return jwtUtil.createAccessToken(userInfo);
+    }
+
+    public LoginResDTO kakaoLogin(String code) {
+        try {
+            // 1. 카카오 액세스 토큰 받기
+            String kakaoAccessToken = getKakaoAccessToken(code);
+
+            // 2. 카카오 사용자 정보 받기
+            KakaoUserInfo kakaoUserInfo = getKakaoUserInfo(kakaoAccessToken);
+
+            // 3. 카카오 ID로 회원가입 되어있는지 확인
+            User user = userRepository.findByUserId(KAKAO_PREFIX + kakaoUserInfo.getId())
+                    .orElseGet(() -> registerKakaoUser(kakaoUserInfo));
+
+            // 4. JWT 토큰 생성 및 반환
+            UserInfoDTO userInfo = UserInfoDTO.builder()
+                    .userId(user.getUserId())
+                    .roleName(user.getRoleName())
+                    .build();
+
+            String accessToken = jwtUtil.createAccessToken(userInfo);
+            String refreshToken = jwtUtil.createRefreshToken(userInfo);
+
+            user.setRefreshToken(refreshToken);
+            userRepository.save(user);
+
+            return LoginResDTO.builder()
+                    .userId(user.getUserId())
+                    .role(user.getRoleName())
+                    .roleDisplayName(user.getRoleDisplayName())
+                    .phoneNumber(user.getPhoneNumber())
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .build();
+
+        } catch (BaseException e) {
+            log.error("Failed to login with Kakao: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error("Failed to login with Kakao: {}", e.getMessage());
+            throw new BaseException(ErrorCode.FAILED_TO_LOGIN, "카카오 로그인 실패");
+        }
+    }
+
+    private String getKakaoAccessToken(String code) {
+        String tokenUrl = "https://kauth.kakao.com/oauth/token";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        String requestBody = String.format(
+                "grant_type=authorization_code&client_id=%s&client_secret=%s&code=%s&redirect_uri=%s",
+                kakaoClientId, kakaoClientSecret, code, kakaoRedirectUri);
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+        ResponseEntity<KakaoTokenResponse> response = restTemplate.exchange(
+                tokenUrl,
+                HttpMethod.POST,
+                requestEntity,
+                KakaoTokenResponse.class);
+
+        if (response.getBody() == null) {
+            throw new BaseException(ErrorCode.FAILED_TO_LOGIN, "카카오 로그인 실패");
+        }
+
+        return response.getBody().getAccessToken();
+    }
+
+    private KakaoUserInfo getKakaoUserInfo(String accessToken) {
+        String userInfoUrl = "https://kapi.kakao.com/v2/user/me";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+        ResponseEntity<KakaoUserInfo> response = restTemplate.exchange(
+                userInfoUrl,
+                HttpMethod.GET,
+                requestEntity,
+                KakaoUserInfo.class);
+
+        if (response.getBody() == null) {
+            throw new BaseException(ErrorCode.FAILED_TO_LOGIN, "카카오 사용자 정보 조회 실패");
+        }
+
+        return response.getBody();
+    }
+
+    private User registerKakaoUser(KakaoUserInfo kakaoUserInfo) {
+        User user = User.builder()
+                .userId(KAKAO_PREFIX + kakaoUserInfo.getId())
+                .name(kakaoUserInfo.getNickname())
+                .password(passwordEncoder.encode(UUID.randomUUID().toString()))
+                .signupType(SignupType.KAKAO)
+                .role(Role.ROLE_USER)
+                .socialId(String.valueOf(kakaoUserInfo.getId()))
+                .email(kakaoUserInfo.getEmail())
+                .build();
+
+        return userRepository.save(user);
     }
 }

@@ -36,7 +36,8 @@ public class JwtFilter extends OncePerRequestFilter {
             "/api/auth/checkUserId",
             "/api/auth/refreshToken",
             "/api/properties/list",
-            "/uploads"
+            "/uploads",
+            "/api/auth/login/kakao/**"
     );
 
     @Override

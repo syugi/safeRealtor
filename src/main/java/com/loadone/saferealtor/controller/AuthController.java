@@ -20,7 +20,7 @@ public class AuthController {
 
     private final AuthService authService;
 
-    /* 인증번호 발송 */
+    /** 인증번호 발송 */
     @PostMapping("/sendVerificationCode")
     public ResponseEntity<String> sendVerificationCode(@RequestBody PhoneNumberReqDTO request) {
         String phoneNumber = request.getPhoneNumber();
@@ -43,7 +43,7 @@ public class AuthController {
         }
     }
 
-    /* 인증번호 확인 */
+    /** 인증번호 확인 */
     @PostMapping("/verifyCode")
     public ResponseEntity<String> verifyCode(@RequestBody VerificationReqDTO request) {
         boolean result = authService.verifyCode(request.getPhoneNumber(), request.getCode());
@@ -53,7 +53,7 @@ public class AuthController {
         return ResponseEntity.ok("인증번호가 확인 되었습니다.");
     }
 
-    /* 사용자명 중복 확인 */
+    /** 사용자명 중복 확인 */
     @GetMapping("/checkUserId")
     public ResponseEntity<String> checkUserId(@RequestParam String userId) {
         try {
@@ -66,7 +66,7 @@ public class AuthController {
         }
     }
 
-    /* 회원가입 */
+    /** 회원가입 */
     @PostMapping("/register")
     public ResponseEntity<RegisterUserResDTO> register(@RequestBody RegisterUserReqDTO request) {
 
@@ -88,22 +88,22 @@ public class AuthController {
         }
     }
 
-    /* 로그인 */
+    /** 로그인 */
     @PostMapping("/login")
     public ResponseEntity<LoginResDTO> login(@RequestBody LoginReqDTO request) {
         try {
             LoginResDTO loginResDTO = authService.login(request.getUserId(), request.getPassword());
             return ResponseEntity.ok(loginResDTO);
         } catch (BaseException be) {
-            log.error(request+ " "+ be.getMessage());
+            log.error("{} {}", request, be.getMessage());
             throw new BaseException(ErrorCode.INVALID_ID_PASSWORD);
         } catch (Exception e) {
-            log.error(request+ " "+ e.getMessage());
+            log.error("{} {}", request, e.getMessage());
             throw new BaseException(ErrorCode.FAILED_TO_LOGIN);
         }
     }
 
-    /* 액세스 토큰 갱신 */
+    /** 액세스 토큰 갱신 */
     @PostMapping("/refreshToken")
     public ResponseEntity<TokenResDTO> refreshAccessToken(@RequestBody TokenReqDTO request) {
         try {
@@ -113,6 +113,20 @@ public class AuthController {
             throw be;
         } catch (Exception e) {
             throw new BaseException(ErrorCode.FAILED_TO_REFRESH_TOKEN, e);
+        }
+    }
+
+    /** 카카오 로그인 */
+    @PostMapping("/login/kakao")
+    public ResponseEntity<LoginResDTO> kakaoLogin(@RequestParam String code) {
+        try {
+            LoginResDTO loginResDTO = authService.kakaoLogin(code);
+            return ResponseEntity.ok(loginResDTO);
+        } catch (BaseException be) {
+            throw be;
+        } catch (Exception e) {
+            log.error("카카오 로그인 실패 : {}", e.getMessage());
+            throw new BaseException(ErrorCode.FAILED_TO_LOGIN, "카카오 로그인 실패");
         }
     }
 }
