@@ -8,6 +8,8 @@ class SafeRealtorApplicationTests {
 
 	@Test
 	void contextLoads() {
+
+		//test
 	}
 
 }
